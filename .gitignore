@@ -1,0 +1,10 @@
+#modified by lqh
+.vscode
+./CMakeLists.txt
+livox_ros_lib/Livox-SDK/build
+livox_ros_lib/Livox-SDK2/build
+
+#whitelist
+
+
+
