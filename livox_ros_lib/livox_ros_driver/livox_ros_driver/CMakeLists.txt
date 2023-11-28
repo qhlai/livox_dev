@@ -114,6 +114,13 @@ if((NOT LIVOX_SDK_LIBRARY) OR (NOT EXISTS ${LIVOX_SDK_LIBRARY}))
 		MESSAGE(${res})
 	ENDFOREACH()
 
+
+	execute_process(COMMAND mkdir ${CMAKE_CURRENT_SOURCE_DIR}/Livox-SDK/build OUTPUT_VARIABLE cmd_res)
+	message("create build")
+	FOREACH(res ${cmd_res})
+		MESSAGE(${res})
+	ENDFOREACH()
+
 	execute_process(COMMAND cmake .. WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Livox-SDK/build OUTPUT_VARIABLE cmd_res)
 	FOREACH(res ${cmd_res})
 		MESSAGE(${res})
