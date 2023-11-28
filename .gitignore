@@ -1,6 +1,6 @@
 #modified by lqh
 .vscode
-CMakeLists.txt
+./CMakeLists.txt
 livox_ros_lib/Livox-SDK/build
 livox_ros_lib/Livox-SDK2/build
 livox_ros_lib/livox_ros_driver/livox_ros_driver/Livox-SDK/build
