@@ -55,6 +55,18 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   eigen_conversions
 )
+find_package(livox_ros_driver2)
+find_package(livox_ros_driver)
+# if(VAR1 MATCHES "Hello")
+if(${livox_ros_driver2_FOUND}  OR  ${livox_ros_driver_FOUND})
+    message("livox_ros_driver 1 or 2 FOUND")
+# elseif(VAR1 MATCHES "world")
+else()
+message("livox_ros_driver NOT FOUND")
+find_package(livox_ros_driver REQUIRED)
+find_package(livox_ros_driver2 REQUIRED)
+
+endif()
 
 find_package(Eigen3 REQUIRED)
 find_package(PCL 1.8 REQUIRED)
