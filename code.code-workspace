@@ -12,6 +12,14 @@
 		"python.analysis.extraPaths": [
 			"/home/uestc/ros/mid360_ws/devel/lib/python3/dist-packages",
 			"/opt/ros/noetic/lib/python3/dist-packages"
-		]
+		],
+		"files.associations": {
+			"*.ipp": "cpp",
+			"bitset": "cpp",
+			"memory": "cpp",
+			"random": "cpp",
+			"future": "cpp",
+			"optional": "cpp"
+		}
 	}
 }
