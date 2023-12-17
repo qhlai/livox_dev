@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(fast_lio_noted)
+project(pc_process)
 
 SET(CMAKE_BUILD_TYPE "Debug")
 
@@ -51,13 +51,13 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   pcl_ros
   tf
-  livox_ros_driver
   message_generation
   eigen_conversions
 )
 
+
 find_package(Eigen3 REQUIRED)
-find_package(PCL REQUIRED)
+find_package(PCL 1.8 REQUIRED)
 
 message(Eigen: ${EIGEN3_INCLUDE_DIR})
 
@@ -66,17 +66,10 @@ include_directories(
   ${EIGEN3_INCLUDE_DIR}
   ${PCL_INCLUDE_DIRS}
   ${PYTHON_INCLUDE_DIRS}
-  include)
+  include
+  src/lib/dbg-macro
+  )
 
-add_message_files(
-  FILES
-  Pose6D.msg
-)
-
-generate_messages(
- DEPENDENCIES
- geometry_msgs
-)
 
 catkin_package(
   CATKIN_DEPENDS geometry_msgs nav_msgs roscpp rospy std_msgs message_runtime
@@ -84,6 +77,27 @@ catkin_package(
   INCLUDE_DIRS
 )
 
-add_executable(fastlio_mapping src/laserMapping.cpp include/ikd-Tree/ikd_Tree.cpp src/preprocess.cpp)
-target_link_libraries(fastlio_mapping ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${PYTHON_LIBRARIES})
-target_include_directories(fastlio_mapping PRIVATE ${PYTHON_INCLUDE_DIRS})
+add_executable(pcd2ply src/transfer/pcd2ply.cpp)
+target_link_libraries(pcd2ply ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${PYTHON_LIBRARIES})
+target_include_directories(pcd2ply PRIVATE ${PYTHON_INCLUDE_DIRS})
+
+add_executable(ply2pcd src/transfer/ply2pcd.cpp)
+target_link_libraries(ply2pcd ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${PYTHON_LIBRARIES})
+target_include_directories(ply2pcd PRIVATE ${PYTHON_INCLUDE_DIRS})
+
+
+add_executable(pcd2oct src/transfer/pcd2oct.cpp)
+target_link_libraries(pcd2oct ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${PYTHON_LIBRARIES})
+target_include_directories(pcd2oct PRIVATE ${PYTHON_INCLUDE_DIRS})
+
+add_executable(ply2oct src/transfer/ply2oct.cpp)
+target_link_libraries(ply2oct ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${PYTHON_LIBRARIES})
+target_include_directories(ply2oct PRIVATE ${PYTHON_INCLUDE_DIRS})
+
+# add_executable(ply2oct_vis src/transfer/ply2oct_vis.cpp)
+# target_link_libraries(ply2oct_vis ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${PYTHON_LIBRARIES})
+# target_include_directories(ply2oct_vis PRIVATE ${PYTHON_INCLUDE_DIRS})
+
+add_executable(test src/test.cpp)
+target_link_libraries(test ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${PYTHON_LIBRARIES})
+target_include_directories(test PRIVATE ${PYTHON_INCLUDE_DIRS})

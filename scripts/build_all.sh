@@ -76,6 +76,7 @@ if [ $ROS_VERSION = ${VERSION_ROS1} ]; then
     # catkin_make -DROS_EDITION=${VERSION_ROS1}
     catkin build ${CATKIN_JOBS} -DROS_EDITION=${VERSION_ROS1}  livox_ros_driver livox_ros_driver2 
     catkin build ${CATKIN_JOBS} -DROS_EDITION=${VERSION_ROS1}  fast_lio
+    catkin build ${CATKIN_JOBS} -DROS_EDITION=${VERSION_ROS1}  pc_process
 elif [ $ROS_VERSION = ${VERSION_ROS2} ]; then
     cd ../../
     colcon build --cmake-args -DROS_EDITION=${VERSION_ROS2} -DHUMBLE_ROS=${ROS_HUMBLE}
