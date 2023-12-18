@@ -1107,11 +1107,13 @@ void MapsManager::publishMaps(
 			UASSERT(occupancyGrid_->getCellSize() > 0.0);
 			if(countGrounds && assembledGround_->size())
 			{
-				assembledGround_ = util3d::voxelize(assembledGround_, occupancyGrid_->getCellSize());
+				// no voxelization
+				// assembledGround_ = util3d::voxelize(assembledGround_, occupancyGrid_->getCellSize());
 			}
 			if(countObstacles && assembledObstacles_->size())
 			{
-				assembledObstacles_ = util3d::voxelize(assembledObstacles_, occupancyGrid_->getCellSize());
+				// no voxelization
+				// assembledObstacles_ = util3d::voxelize(assembledObstacles_, occupancyGrid_->getCellSize());
 			}
 		}
 
