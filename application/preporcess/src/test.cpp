@@ -57,12 +57,10 @@ int main(int argc, char** argv)
         pcl::PolygonMesh mesh;
         if (pcl::io::loadPLYFile(input_file, mesh) == -1)
         {
-            std::cout << "Failed to load PCD file: " << input_file << std::endl;
+            std::cout << "Failed to load PLY file: " << input_file << std::endl;
             return -1;
         } 
-
         pcl::fromPCLPointCloud2(mesh.cloud, *cloud);
-
     }
     else{
         std::cout << "Failed to load PCD file: " << input_file << std::endl;

@@ -101,3 +101,7 @@ target_include_directories(ply2oct PRIVATE ${PYTHON_INCLUDE_DIRS})
 add_executable(test src/test.cpp)
 target_link_libraries(test ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${PYTHON_LIBRARIES})
 target_include_directories(test PRIVATE ${PYTHON_INCLUDE_DIRS})
+
+add_executable(rtabmap_test src/rtabmap_test.cpp)
+target_link_libraries(rtabmap_test ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${PYTHON_LIBRARIES})
+target_include_directories(rtabmap_test PRIVATE ${PYTHON_INCLUDE_DIRS})
