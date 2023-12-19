@@ -826,7 +826,7 @@ void MapsManager::publishMaps(
 		const std::string & mapFrameId)
 {
 	ROS_DEBUG("Publishing maps... poses=%d", (int)poses.size());
-
+	occupancyGrid_->setCellSize(0.001); // add here,force to 0.001m voxel size
 	// publish maps
 	if(cloudMapPub_.getNumSubscribers() ||
 	   scanMapPub_.getNumSubscribers() ||
@@ -1101,19 +1101,17 @@ void MapsManager::publishMaps(
 				}
 			}
 		}
-
+		cloudOutputVoxelized_=false;
 		if(cloudOutputVoxelized_)
 		{
 			UASSERT(occupancyGrid_->getCellSize() > 0.0);
 			if(countGrounds && assembledGround_->size())
 			{
-				// no voxelization
-				// assembledGround_ = util3d::voxelize(assembledGround_, occupancyGrid_->getCellSize());
+				assembledGround_ = util3d::voxelize(assembledGround_, occupancyGrid_->getCellSize());
 			}
 			if(countObstacles && assembledObstacles_->size())
 			{
-				// no voxelization
-				// assembledObstacles_ = util3d::voxelize(assembledObstacles_, occupancyGrid_->getCellSize());
+				assembledObstacles_ = util3d::voxelize(assembledObstacles_, occupancyGrid_->getCellSize());
 			}
 		}
 
