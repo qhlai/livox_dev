@@ -7,7 +7,8 @@
 #include <pcl/conversions.h>   
 #include <pcl_ros/transforms.h>
 #include <queue>
-
+#include <pcl/filters/statistical_outlier_removal.h>
+#include <pcl/filters/voxel_grid.h>
 using POINTCLOUD_TYPE = pcl::PointXYZRGBNormal;
 using POINTCLOUD = pcl::PointCloud<POINTCLOUD_TYPE>;
 sensor_msgs::PointCloud2 cloud_map;
@@ -28,7 +29,7 @@ void voxel_cb(const sensor_msgs::PointCloud2::ConstPtr& msg) {
     POINTCLOUD cloud;
     pcl::fromROSMsg(cloud_voxel, cloud);
     cloud_voxel_sum_queue.push(cloud);
-    if(cloud_voxel_sum_queue.size() > 5) {
+    if(cloud_voxel_sum_queue.size() > 15) {
         cloud_voxel_sum_queue.pop();
     }
     ROS_INFO("Received point cloud with width: %d, height: %d", msg->width, msg->height);
@@ -46,6 +47,28 @@ bool gen_sum_pc(){
         cloud_voxel_sum += cloud_voxel_sum_queue.front();
         // cloud_voxel_sum.pop();
     }
+
+#if 0
+    pcl::PointCloud<POINTCLOUD_TYPE>::Ptr cloud_ptr(new pcl::PointCloud<POINTCLOUD_TYPE>(cloud_voxel_sum));
+    pcl::PointCloud<POINTCLOUD_TYPE>::Ptr cloud_filtered(new pcl::PointCloud<POINTCLOUD_TYPE>);
+    pcl::StatisticalOutlierRemoval<POINTCLOUD_TYPE> sor;
+    sor.setInputCloud(cloud_ptr);
+    sor.setMeanK(50);
+    sor.setStddevMulThresh(1.0);
+    sor.filter(*cloud_filtered);
+    cloud_voxel_sum = *cloud_filtered;
+#endif
+
+#if 0
+    pcl::PointCloud<POINTCLOUD_TYPE>::Ptr cloud_ptr(new pcl::PointCloud<POINTCLOUD_TYPE>(cloud_voxel_sum));
+    pcl::PointCloud<POINTCLOUD_TYPE>::Ptr cloud_filtered(new pcl::PointCloud<POINTCLOUD_TYPE>);
+    pcl::VoxelGrid<POINTCLOUD_TYPE> sor;
+    sor.setInputCloud(cloud_ptr);
+    sor.setLeafSize(0.1, 0.1, 0.1);
+    sor.filter(*cloud_filtered);
+    cloud_voxel_sum = *cloud_filtered;
+#endif
+
     return true;
     // pcl::toROSMsg(cloud_voxel_sum, cloud_map_voxel_sum);
 }
