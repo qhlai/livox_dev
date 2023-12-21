@@ -17,10 +17,16 @@
 #include <tf_conversions/tf_eigen.h>
 
 #include <sensor_msgs/PointCloud2.h>
+// #include <occupancy_map_msgs/OccupancyMap.h>
+#include <visualization_msgs/MarkerArray.h>
+
+#include <octomap/octomap.h>
+#include <octomap_msgs/Octomap.h>
+#include <octomap_msgs/conversions.h>
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
-
+#define USE_ROS_SUB true;
 using POINTCLOUD_TYPE = pcl::PointXYZRGB;
 using POINTCLOUD = pcl::PointCloud<POINTCLOUD_TYPE>;
 sensor_msgs::PointCloud2 cloud_map;
@@ -30,6 +36,7 @@ POINTCLOUD cloud_voxel_sum;
 // pcl::PointCloud<POINTCLOUD_TYPE> cloud_voxel_sum;
 sensor_msgs::PointCloud2 cloud_map_voxel_sum;
 Eigen::Isometry3d eigen_transform;
+
 bool if_trans=false;
 
 void tf_trans(){
@@ -65,14 +72,19 @@ void tf_trans(){
         ROS_ERROR("%s", ex.what());
         // 处理异常情况
         if_trans = false;
-    }
-    // Eigen::Isometry3d eigen_transform;
-
-
-    // tf::transformTFToEigen(transform, eigenTransform);
-    
+    }   
 }
 
+void show_octmap(){
+
+    pcl::octree::OctreePointCloud<POINTCLOUD_TYPE> octree(0.01); // 设置
+    // octree.setInputCloud(&cloud_voxel_sum);
+    // octree.addPointsFromInputCloud();
+
+    // 执行八叉树构建
+    // octree.buildOctree();
+
+}
 
 void cloud_map_cb(const sensor_msgs::PointCloud2::ConstPtr& msg) {
     cloud_map = *msg;
@@ -200,6 +212,7 @@ int main(int argc, char** argv) {
     ros::NodeHandle nh;
 
 
+#ifdef USE_ROS_SUB
     tf_trans();
 
     ros::Subscriber sub_cloudmap = nh.subscribe<sensor_msgs::PointCloud2>("/rtabmap/cloud_map", 1, cloud_map_cb);
@@ -207,14 +220,21 @@ int main(int argc, char** argv) {
     ros::Publisher  pub_cloudmap = nh.advertise<sensor_msgs::PointCloud2>("/cloud_map_sum", 1);
     // ros::Subscriber sub_voxel = nh.subscribe<sensor_msgs::PointCloud2>("/voxel", 1, voxel_cb);
     ros::ServiceServer service_savemap = nh.advertiseService("save_pc", save_pc_cb);
+    // ros::Publisher map_pub = nh.advertise<occupancy_map_msgs::OccupancyMap>("/octomap_binary", 1);
+#else 
 
+#endif
 
-    ros::Rate rate(5);
+    ros::Rate rate(3);
     while (ros::ok())
     {
+#ifdef USE_ROS_SUB
         gen_sum_pc();
         pcl::toROSMsg(cloud_voxel_sum, cloud_map_voxel_sum);
         pub_cloudmap.publish(cloud_map_voxel_sum);
+#endif
+
+
         ros::spinOnce();
         ros::Duration(rate).sleep();
     }
