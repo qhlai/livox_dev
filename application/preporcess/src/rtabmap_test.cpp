@@ -17,6 +17,7 @@
 #include <tf_conversions/tf_eigen.h>
 
 #include <sensor_msgs/PointCloud2.h>
+#include <nav_msgs/OccupancyGrid.h>
 // #include <occupancy_map_msgs/OccupancyMap.h>
 #include <visualization_msgs/MarkerArray.h>
 
@@ -26,17 +27,23 @@
 
 #include <Eigen/Core>
 #include <Eigen/Geometry>
-#define USE_ROS_SUB true;
-using POINTCLOUD_TYPE = pcl::PointXYZRGB;
-using POINTCLOUD = pcl::PointCloud<POINTCLOUD_TYPE>;
+// #include <std/shared_ptr.h>
+
+// #define USE_RTABMAP_SUB
+// #define USE_FASTLIO_SUB
+
+using POINT_TYPE = pcl::PointXYZRGB;
+using POINTCLOUD = pcl::PointCloud<POINT_TYPE>;
 sensor_msgs::PointCloud2 cloud_map;
 sensor_msgs::PointCloud2 cloud_voxel;
 std::queue<POINTCLOUD> cloud_voxel_sum_queue;
-POINTCLOUD cloud_voxel_sum;
-// pcl::PointCloud<POINTCLOUD_TYPE> cloud_voxel_sum;
-sensor_msgs::PointCloud2 cloud_map_voxel_sum;
-Eigen::Isometry3d eigen_transform;
+// POINTCLOUD cloud_voxel_sum;
+POINTCLOUD::Ptr cloud_voxel_sum(new POINTCLOUD);
 
+// pcl::PointCloud<POINT_TYPE> cloud_voxel_sum;
+sensor_msgs::PointCloud2 cloud_map_voxel_sum_msg;
+Eigen::Isometry3d eigen_transform;
+ros::Publisher occupancy_grid_pub;
 bool if_trans=false;
 
 void tf_trans(){
@@ -77,12 +84,64 @@ void tf_trans(){
 
 void show_octmap(){
 
-    pcl::octree::OctreePointCloud<POINTCLOUD_TYPE> octree(0.01); // 设置
-    // octree.setInputCloud(&cloud_voxel_sum);
-    // octree.addPointsFromInputCloud();
+    pcl::octree::OctreePointCloud<POINT_TYPE> octree(0.01); // 设置
+    octree.setInputCloud(cloud_voxel_sum);
+    octree.addPointsFromInputCloud();
 
     // 执行八叉树构建
     // octree.buildOctree();
+// 获取 Octree 的边界框
+Eigen::Vector3f min_pt, max_pt;
+// octree.getBoundingBox(min_pt, max_pt);
+ // 获取 Octree 中所有点的边界框
+// Eigen::Vector4f min_pt, max_pt;
+// pcl::getMinMax3D(*cloud_voxel_sum, min_pt, max_pt);
+min_pt<< -10 ,-10 ,-10;
+max_pt<< 10 ,10 ,10;
+float x_range = max_pt.x() - min_pt.x();
+float y_range = max_pt.y() - min_pt.y();
+
+// 计算 OccupancyGrid 的尺寸和分辨率
+double resolution = 0.1; // 你的 Octree 的分辨率
+double map_width = (max_pt.x() - min_pt.x()) / resolution;
+double map_height = (max_pt.y() - min_pt.y()) / resolution;
+double map_depth = (max_pt.z() - min_pt.z()) / resolution;
+// 创建 OccupancyGrid 消息
+nav_msgs::OccupancyGrid occupancy_grid;
+occupancy_grid.header.stamp = ros::Time::now();
+occupancy_grid.header.frame_id = "map";
+occupancy_grid.info.resolution = resolution;
+occupancy_grid.info.width = static_cast<uint32_t>(map_width);
+occupancy_grid.info.height = static_cast<uint32_t>(map_height);
+// occupancy_grid.info.depth = static_cast<uint32_t>(map_depth);
+occupancy_grid.info.origin.position.x = min_pt.x();
+occupancy_grid.info.origin.position.y = min_pt.y();
+occupancy_grid.info.origin.position.z = min_pt.z();
+occupancy_grid.data.resize(occupancy_grid.info.width * occupancy_grid.info.height, -1); // 初始化为未知
+pcl::octree::OctreePointCloud<POINT_TYPE>::AlignedPointTVector voxel_centers;
+// 遍历 Octree 中的每个点，将其映射到 OccupancyGrid
+POINTCLOUD::Ptr cloud(new POINTCLOUD);
+// octree.leaf_getBoundingBox(min_pt, max_pt);
+octree.getOccupiedVoxelCenters(voxel_centers);
+for (const auto& point : voxel_centers) {
+    cloud->push_back(point);
+}
+
+for (const POINT_TYPE& point : cloud->points)
+{
+    int x = static_cast<int>((point.x - min_pt.x()) / resolution);
+    int y = static_cast<int>((point.y - min_pt.y()) / resolution);
+    int z = static_cast<int>((point.z - min_pt.z()) / resolution);
+
+    if (x >= 0 && x < map_width && y >= 0 && y < map_height && z >= 0 && z < map_depth)
+    {
+        int index = z * (occupancy_grid.info.width * occupancy_grid.info.height) + y * occupancy_grid.info.width + x;
+        occupancy_grid.data[index] = 100; // 设置占据的栅格
+    }
+}
+
+// 发布 OccupancyGrid 消息
+occupancy_grid_pub.publish(occupancy_grid);
 
 }
 
@@ -120,10 +179,10 @@ bool gen_sum_pc(){
         return false;
     }
     // ROS_INFO("save_cb");
-    pcl::fromROSMsg(cloud_map, cloud_voxel_sum);
+    pcl::fromROSMsg(cloud_map, *cloud_voxel_sum);
     // cloud += cloud_map;
     for(uint32_t i = 0; i < cloud_voxel_sum_queue.size(); i++) {
-        cloud_voxel_sum += cloud_voxel_sum_queue.front();
+        *cloud_voxel_sum += cloud_voxel_sum_queue.front();
         // cloud_voxel_sum.pop();
     }
 
@@ -135,36 +194,36 @@ if(voxel_cout >= 30)
     voxel_cout=0;
 #if 1
 {
-    pcl::PointCloud<POINTCLOUD_TYPE>::Ptr cloud_ptr(new pcl::PointCloud<POINTCLOUD_TYPE>(cloud_voxel_sum));
-    pcl::PointCloud<POINTCLOUD_TYPE>::Ptr cloud_filtered(new pcl::PointCloud<POINTCLOUD_TYPE>);
-    pcl::StatisticalOutlierRemoval<POINTCLOUD_TYPE> sor;
+    pcl::PointCloud<POINT_TYPE>::Ptr cloud_ptr(new pcl::PointCloud<POINT_TYPE>(*cloud_voxel_sum));
+    pcl::PointCloud<POINT_TYPE>::Ptr cloud_filtered(new pcl::PointCloud<POINT_TYPE>);
+    pcl::StatisticalOutlierRemoval<POINT_TYPE> sor;
     sor.setInputCloud(cloud_ptr);
     sor.setMeanK(30);
     sor.setStddevMulThresh(1.0);
     sor.filter(*cloud_filtered);
-    cloud_voxel_sum = *cloud_filtered;
+    *cloud_voxel_sum = *cloud_filtered;
 }
 #endif
 
 #if 1
     {
         // voxel_cout=0;
-        pcl::PointCloud<POINTCLOUD_TYPE>::Ptr cloud_ptr(new pcl::PointCloud<POINTCLOUD_TYPE>(cloud_voxel_sum));
-        pcl::PointCloud<POINTCLOUD_TYPE>::Ptr cloud_filtered(new pcl::PointCloud<POINTCLOUD_TYPE>);
-        pcl::VoxelGrid<POINTCLOUD_TYPE> sor;
+        pcl::PointCloud<POINT_TYPE>::Ptr cloud_ptr(new pcl::PointCloud<POINT_TYPE>(*cloud_voxel_sum));
+        pcl::PointCloud<POINT_TYPE>::Ptr cloud_filtered(new pcl::PointCloud<POINT_TYPE>);
+        pcl::VoxelGrid<POINT_TYPE> sor;
         sor.setInputCloud(cloud_ptr);
         sor.setLeafSize(0.01, 0.01, 0.01);
         sor.filter(*cloud_filtered);
-        cloud_voxel_sum = *cloud_filtered;
+        *cloud_voxel_sum = *cloud_filtered;
     }
 #endif
 
 }
 #endif
 
-    std::cout <<"storage analyse: "<< cloud_voxel_sum.size() << ", " << cloud_voxel_sum_queue.size() << std::endl;
+    std::cout <<"storage analyse: "<< cloud_voxel_sum->size() << ", " << cloud_voxel_sum_queue.size() << std::endl;
     return true;
-    // pcl::toROSMsg(cloud_voxel_sum, cloud_map_voxel_sum);
+    // pcl::toROSMsg(cloud_voxel_sum, cloud_map_voxel_sum_msg);
 }
 bool save_pc_cb(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res) {
 #if 0
@@ -173,7 +232,7 @@ bool save_pc_cb(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res) {
         return false;
     }
     ROS_INFO("save_cb");
-    pcl::PointCloud<POINTCLOUD_TYPE> cloud;
+    pcl::PointCloud<POINT_TYPE> cloud;
     pcl::fromROSMsg(cloud_map, cloud);
     pcl::io::savePCDFileASCII("test_pcd.pcd", cloud);
     return true;
@@ -184,7 +243,7 @@ bool save_pc_cb(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res) {
         return false;
     }
     ROS_INFO("save_cb");
-    pcl::PointCloud<POINTCLOUD_TYPE> cloud;
+    pcl::PointCloud<POINT_TYPE> cloud;
     pcl::fromROSMsg(cloud_map, cloud);
     // cloud += cloud_map;
     for(uint32_t i = 0; i < cloud_voxel_sum_queue.size(); i++) {
@@ -197,7 +256,7 @@ bool save_pc_cb(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res) {
 
 #if 1
     if(gen_sum_pc()){
-        pcl::io::savePCDFileASCII("/home/hanglok/output/test_pcd.pcd", cloud_voxel_sum);
+        pcl::io::savePCDFileASCII("~/output/test_pcd.pcd", *cloud_voxel_sum);
         return true;
     }
     else{
@@ -211,27 +270,49 @@ int main(int argc, char** argv) {
     ros::init(argc, argv, "point_cloud_subscriber");
     ros::NodeHandle nh;
 
-
-#ifdef USE_ROS_SUB
+    ros::Publisher  pub_cloudmap = nh.advertise<sensor_msgs::PointCloud2>("/cloud_map_sum", 1);
+    ros::ServiceServer service_savemap = nh.advertiseService("save_pc", save_pc_cb);
+    // ros::Publisher occupancy_grid_pub = nh.advertise<nav_msgs::OccupancyGrid>("occupancy_grid", 1);
+    occupancy_grid_pub = nh.advertise<nav_msgs::OccupancyGrid>("occupancy_grid", 1);
+#ifdef USE_RTABMAP_SUB
     tf_trans();
 
     ros::Subscriber sub_cloudmap = nh.subscribe<sensor_msgs::PointCloud2>("/rtabmap/cloud_map", 1, cloud_map_cb);
     ros::Subscriber sub_voxel = nh.subscribe<sensor_msgs::PointCloud2>("/voxel_cloud", 1, voxel_cb);
-    ros::Publisher  pub_cloudmap = nh.advertise<sensor_msgs::PointCloud2>("/cloud_map_sum", 1);
+    
     // ros::Subscriber sub_voxel = nh.subscribe<sensor_msgs::PointCloud2>("/voxel", 1, voxel_cb);
-    ros::ServiceServer service_savemap = nh.advertiseService("save_pc", save_pc_cb);
+    // ros::ServiceServer service_savemap = nh.advertiseService("save_pc", save_pc_cb);
     // ros::Publisher map_pub = nh.advertise<occupancy_map_msgs::OccupancyMap>("/octomap_binary", 1);
+#elif USE_FASTLIO_SUB
+    std::cout << "pcd size:"<< cloud_voxel_sum.size() << std::endl;
 #else 
+    // std::string input_file = argv[1];
+    std::string input_file = "/home/uestc/dataset/test_pcd.pcd";
+    // pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+
+    if (pcl::io::loadPCDFile<pcl::PointXYZRGB>(input_file, *cloud_voxel_sum) == -1)
+    {
+        std::cout << "Failed to load PCD file: " << input_file << std::endl;
+        return -1;
+    }
+    std::cout << "pcd size:"<< cloud_voxel_sum->size() << std::endl;
 
 #endif
 
     ros::Rate rate(3);
     while (ros::ok())
     {
-#ifdef USE_ROS_SUB
+#ifdef USE_RTABMAP_SUB
         gen_sum_pc();
-        pcl::toROSMsg(cloud_voxel_sum, cloud_map_voxel_sum);
-        pub_cloudmap.publish(cloud_map_voxel_sum);
+        pcl::toROSMsg(cloud_voxel_sum, cloud_map_voxel_sum_msg);
+        pub_cloudmap.publish(cloud_map_voxel_sum_msg);
+#elif USE_FASTLIO_SUB
+        std::cout << "pcd size:"<< cloud_voxel_sum.size() << std::endl;
+#else
+        pcl::toROSMsg(*cloud_voxel_sum, cloud_map_voxel_sum_msg);
+        cloud_map_voxel_sum_msg.header.frame_id = "map";
+        pub_cloudmap.publish(cloud_map_voxel_sum_msg);
+        show_octmap();
 #endif
 
 
