@@ -39,7 +39,7 @@
 // #include <dbg.h>
 // #include <std/shared_ptr.h>
 
-// #define USE_RTABMAP_SUB
+#define USE_RTABMAP_SUB
 // #define USE_FASTLIO_SUB
 
 // class 
@@ -376,7 +376,7 @@ int main(int argc, char** argv) {
     {
 #ifdef USE_RTABMAP_SUB
         gen_sum_pc();
-        pcl::toROSMsg(cloud_voxel_sum, cloud_map_voxel_sum_msg);
+        pcl::toROSMsg(*cloud_voxel_sum, cloud_map_voxel_sum_msg);
         pub_cloudmap.publish(cloud_map_voxel_sum_msg);
 #elif USE_FASTLIO_SUB
         std::cout << "pcd size:"<< cloud_voxel_sum.size() << std::endl;
