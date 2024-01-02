@@ -7,7 +7,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
 # 指定保存的 rosbag 文件路径
-bag_file = "/home/lqh/ros/dataset/2023-12-13-1/2023-12-13-17-25-39.bag"
+bag_file = "/home/lqh/ros/dataset/2023-12-13-1/2023-12-13-16-20-07.bag"
 # 指定要保存的话题名称
 topic_name_armpose = "/arm_pose"
 topic_name_odom = "/rtabmap/odom"
@@ -39,12 +39,12 @@ for topic, msg, t in bag.read_messages():
     allow_t_diff=1
     if topic == topic_name_armpose:
         msg_pose = msg
-        file0.write(f"{msg.header.stamp.to_sec()},{msg.pose.position.x},{msg.pose.position.y},{msg.pose.position.z},{msg.pose.orientation.w},{msg.pose.orientation.x},{msg.pose.orientation.y},{msg.pose.orientation.z}")
+        file0.write(f"{msg.header.stamp.to_sec()} {msg.pose.position.x} {msg.pose.position.y},{msg.pose.position.z} {msg.pose.orientation.x} {msg.pose.orientation.y} {msg.pose.orientation.z} {msg.pose.orientation.w}")
         file0.write("\n")
         # ax.scatter(msg.pose.position.x, msg.pose.position.y, msg.pose.position.z, c="g")
     elif topic == topic_name_odom:
         msg_odom = msg
-        file1.write(f"{msg.header.stamp.to_sec()}, {msg.pose.pose.position.x},{msg.pose.pose.position.y},{msg.pose.pose.position.z}, {msg.pose.pose.orientation.w}, {msg.pose.pose.orientation.x}, {msg.pose.pose.orientation.y}, {msg.pose.pose.orientation.z}")
+        file1.write(f"{msg.header.stamp.to_sec()} {msg.pose.pose.position.x} {msg.pose.pose.position.y} {msg.pose.pose.position.z} {msg.pose.pose.orientation.x}, {msg.pose.pose.orientation.y} {msg.pose.pose.orientation.z} {msg.pose.pose.orientation.w}")
         file1.write("\n")
         # ax.scatter(msg.pose.pose.position.x, msg.pose.pose.position.y, msg.pose.pose.position.z, c="r")
     # print("1")

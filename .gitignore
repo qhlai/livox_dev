@@ -6,3 +6,4 @@ livox_ros_lib/Livox-SDK2/build
 livox_ros_lib/livox_ros_driver/livox_ros_driver/Livox-SDK/build
 # application/rtabmap
 livox_ros_driver/livox_ros_driver/Livox-SDK/build/
+application/align_trajectory/build/

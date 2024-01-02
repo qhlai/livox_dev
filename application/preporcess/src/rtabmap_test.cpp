@@ -240,7 +240,7 @@ void voxel_cb(const sensor_msgs::PointCloud2::ConstPtr& msg) {
     }
 // transformedCloud=cloud;
     cloud_voxel_sum_queue.push(transformedCloud);
-    if(cloud_voxel_sum_queue.size() > 50) {
+    if(cloud_voxel_sum_queue.size() > 10) {
         cloud_voxel_sum_queue.pop();
     }
     ROS_INFO("Received point cloud with width: %d, height: %d", msg->width, msg->height);
