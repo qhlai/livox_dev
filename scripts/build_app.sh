@@ -79,6 +79,7 @@ if [ $ROS_VERSION = ${VERSION_ROS1} ]; then
     # catkin build ${CATKIN_JOBS} -DROS_EDITION=${VERSION_ROS1}  rtabmap_ros
     catkin build ${CATKIN_JOBS} -DROS_EDITION=${VERSION_ROS1}  pc_process
     catkin build ${CATKIN_JOBS} -DROS_EDITION=${VERSION_ROS1}  a1_description unitree_controller unitree_gazebo unitree_legged_control
+    catkin build ${CATKIN_JOBS} -DROS_EDITION=${VERSION_ROS1}  traj_match
 elif [ $ROS_VERSION = ${VERSION_ROS2} ]; then
     cd ../../
     colcon build --cmake-args -DROS_EDITION=${VERSION_ROS2} -DHUMBLE_ROS=${ROS_HUMBLE}

@@ -26,6 +26,7 @@
 
 #include <sensor_msgs/PointCloud2.h>
 #include <nav_msgs/OccupancyGrid.h>
+#include <nav_msgs/Odometry.h>
 #include <visualization_msgs/MarkerArray.h>
 // #include <occupancy_map_msgs/OccupancyMap.h>
 #include <visualization_msgs/MarkerArray.h>
@@ -346,6 +347,8 @@ int main(int argc, char** argv) {
     ros::ServiceServer service_savemap = nh.advertiseService("save_pc", save_pc_cb);
     // ros::Publisher occupancy_grid_pub = nh.advertise<nav_msgs::OccupancyGrid>("occupancy_grid", 1);
     occupancy_grid_pub = nh.advertise<sensor_msgs::PointCloud2>("octree_markers", 1);
+
+    ros::Subscriber sub_odometry = nh.subscribe<nav_msgs::Odometry>("/rtabmap/odom", 1, cloud_map_cb);
 #ifdef USE_RTABMAP_SUB
     tf_trans();
 

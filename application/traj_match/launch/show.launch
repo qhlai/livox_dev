@@ -1,0 +1,4 @@
+<launch>
+<node pkg="pc_process" type="rtabmap_test" name="test" output="screen" />
+
+</launch>
