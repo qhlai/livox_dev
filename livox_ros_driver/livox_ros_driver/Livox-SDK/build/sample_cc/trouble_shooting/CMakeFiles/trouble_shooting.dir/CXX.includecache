@@ -18,7 +18,7 @@ stdint.h
 livox_def.h
 ../sdk_core/include/livox_def.h
 
-/home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/trouble_shooting/main.cpp
+/home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/trouble_shooting/main.cpp
 stdio.h
 -
 stdlib.h
@@ -32,5 +32,5 @@ string
 map
 -
 livox_sdk.h
-/home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/trouble_shooting/livox_sdk.h
+/home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/trouble_shooting/livox_sdk.h
 

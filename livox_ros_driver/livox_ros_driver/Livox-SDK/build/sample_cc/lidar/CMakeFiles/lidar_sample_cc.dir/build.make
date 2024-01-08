@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK
+CMAKE_SOURCE_DIR = /home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build
+CMAKE_BINARY_DIR = /home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build
 
 # Include any dependencies generated for this target.
 include sample_cc/lidar/CMakeFiles/lidar_sample_cc.dir/depend.make
@@ -59,29 +59,29 @@ include sample_cc/lidar/CMakeFiles/lidar_sample_cc.dir/flags.make
 
 sample_cc/lidar/CMakeFiles/lidar_sample_cc.dir/main.cpp.o: sample_cc/lidar/CMakeFiles/lidar_sample_cc.dir/flags.make
 sample_cc/lidar/CMakeFiles/lidar_sample_cc.dir/main.cpp.o: ../sample_cc/lidar/main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object sample_cc/lidar/CMakeFiles/lidar_sample_cc.dir/main.cpp.o"
-	cd /home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sample_cc/lidar && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/lidar_sample_cc.dir/main.cpp.o -c /home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object sample_cc/lidar/CMakeFiles/lidar_sample_cc.dir/main.cpp.o"
+	cd /home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sample_cc/lidar && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/lidar_sample_cc.dir/main.cpp.o -c /home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar/main.cpp
 
 sample_cc/lidar/CMakeFiles/lidar_sample_cc.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/lidar_sample_cc.dir/main.cpp.i"
-	cd /home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sample_cc/lidar && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar/main.cpp > CMakeFiles/lidar_sample_cc.dir/main.cpp.i
+	cd /home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sample_cc/lidar && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar/main.cpp > CMakeFiles/lidar_sample_cc.dir/main.cpp.i
 
 sample_cc/lidar/CMakeFiles/lidar_sample_cc.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/lidar_sample_cc.dir/main.cpp.s"
-	cd /home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sample_cc/lidar && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar/main.cpp -o CMakeFiles/lidar_sample_cc.dir/main.cpp.s
+	cd /home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sample_cc/lidar && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar/main.cpp -o CMakeFiles/lidar_sample_cc.dir/main.cpp.s
 
 sample_cc/lidar/CMakeFiles/lidar_sample_cc.dir/lds_lidar.cpp.o: sample_cc/lidar/CMakeFiles/lidar_sample_cc.dir/flags.make
 sample_cc/lidar/CMakeFiles/lidar_sample_cc.dir/lds_lidar.cpp.o: ../sample_cc/lidar/lds_lidar.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object sample_cc/lidar/CMakeFiles/lidar_sample_cc.dir/lds_lidar.cpp.o"
-	cd /home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sample_cc/lidar && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/lidar_sample_cc.dir/lds_lidar.cpp.o -c /home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar/lds_lidar.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object sample_cc/lidar/CMakeFiles/lidar_sample_cc.dir/lds_lidar.cpp.o"
+	cd /home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sample_cc/lidar && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/lidar_sample_cc.dir/lds_lidar.cpp.o -c /home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar/lds_lidar.cpp
 
 sample_cc/lidar/CMakeFiles/lidar_sample_cc.dir/lds_lidar.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/lidar_sample_cc.dir/lds_lidar.cpp.i"
-	cd /home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sample_cc/lidar && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar/lds_lidar.cpp > CMakeFiles/lidar_sample_cc.dir/lds_lidar.cpp.i
+	cd /home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sample_cc/lidar && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar/lds_lidar.cpp > CMakeFiles/lidar_sample_cc.dir/lds_lidar.cpp.i
 
 sample_cc/lidar/CMakeFiles/lidar_sample_cc.dir/lds_lidar.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/lidar_sample_cc.dir/lds_lidar.cpp.s"
-	cd /home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sample_cc/lidar && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar/lds_lidar.cpp -o CMakeFiles/lidar_sample_cc.dir/lds_lidar.cpp.s
+	cd /home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sample_cc/lidar && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar/lds_lidar.cpp -o CMakeFiles/lidar_sample_cc.dir/lds_lidar.cpp.s
 
 # Object files for target lidar_sample_cc
 lidar_sample_cc_OBJECTS = \
@@ -96,8 +96,8 @@ sample_cc/lidar/lidar_sample_cc: sample_cc/lidar/CMakeFiles/lidar_sample_cc.dir/
 sample_cc/lidar/lidar_sample_cc: sample_cc/lidar/CMakeFiles/lidar_sample_cc.dir/build.make
 sample_cc/lidar/lidar_sample_cc: sdk_core/liblivox_sdk_static.a
 sample_cc/lidar/lidar_sample_cc: sample_cc/lidar/CMakeFiles/lidar_sample_cc.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable lidar_sample_cc"
-	cd /home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sample_cc/lidar && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/lidar_sample_cc.dir/link.txt --verbose=$(VERBOSE)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable lidar_sample_cc"
+	cd /home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sample_cc/lidar && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/lidar_sample_cc.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
 sample_cc/lidar/CMakeFiles/lidar_sample_cc.dir/build: sample_cc/lidar/lidar_sample_cc
@@ -105,10 +105,10 @@ sample_cc/lidar/CMakeFiles/lidar_sample_cc.dir/build: sample_cc/lidar/lidar_samp
 .PHONY : sample_cc/lidar/CMakeFiles/lidar_sample_cc.dir/build
 
 sample_cc/lidar/CMakeFiles/lidar_sample_cc.dir/clean:
-	cd /home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sample_cc/lidar && $(CMAKE_COMMAND) -P CMakeFiles/lidar_sample_cc.dir/cmake_clean.cmake
+	cd /home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sample_cc/lidar && $(CMAKE_COMMAND) -P CMakeFiles/lidar_sample_cc.dir/cmake_clean.cmake
 .PHONY : sample_cc/lidar/CMakeFiles/lidar_sample_cc.dir/clean
 
 sample_cc/lidar/CMakeFiles/lidar_sample_cc.dir/depend:
-	cd /home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK /home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar /home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build /home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sample_cc/lidar /home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sample_cc/lidar/CMakeFiles/lidar_sample_cc.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK /home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar /home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build /home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sample_cc/lidar /home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sample_cc/lidar/CMakeFiles/lidar_sample_cc.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : sample_cc/lidar/CMakeFiles/lidar_sample_cc.dir/depend
 

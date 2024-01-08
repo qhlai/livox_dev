@@ -4,9 +4,9 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar_utc_sync/lds_lidar.cpp" "/home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sample_cc/lidar_utc_sync/CMakeFiles/lidar_utc_sync.dir/lds_lidar.cpp.o"
-  "/home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar_utc_sync/main.cpp" "/home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sample_cc/lidar_utc_sync/CMakeFiles/lidar_utc_sync.dir/main.cpp.o"
-  "/home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar_utc_sync/synchro.cpp" "/home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sample_cc/lidar_utc_sync/CMakeFiles/lidar_utc_sync.dir/synchro.cpp.o"
+  "/home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar_utc_sync/lds_lidar.cpp" "/home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sample_cc/lidar_utc_sync/CMakeFiles/lidar_utc_sync.dir/lds_lidar.cpp.o"
+  "/home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar_utc_sync/main.cpp" "/home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sample_cc/lidar_utc_sync/CMakeFiles/lidar_utc_sync.dir/main.cpp.o"
+  "/home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar_utc_sync/synchro.cpp" "/home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sample_cc/lidar_utc_sync/CMakeFiles/lidar_utc_sync.dir/synchro.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
@@ -20,7 +20,7 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
 
 # Targets to which this target links.
 set(CMAKE_TARGET_LINKED_INFO_FILES
-  "/home/lqh/ros/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sdk_core/CMakeFiles/livox_sdk_static.dir/DependInfo.cmake"
+  "/home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sdk_core/CMakeFiles/livox_sdk_static.dir/DependInfo.cmake"
   )
 
 # Fortran module output directory.
