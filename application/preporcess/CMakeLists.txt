@@ -81,8 +81,8 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(Eigen3 REQUIRED)
 find_package(PCL 1.10 REQUIRED)
 find_package(OpenCV REQUIRED)
-find_package(ZLIB)
-find_package(GTSAM REQUIRED QUIET)
+# find_package(ZLIB)
+# find_package(GTSAM REQUIRED QUIET)
 # find_package(cpprestsdk REQUIRED) #sudo apt-get install libcpprest-dev
 find_package(Ceres REQUIRED)
 
