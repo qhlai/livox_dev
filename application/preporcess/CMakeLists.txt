@@ -8,10 +8,10 @@ ADD_COMPILE_OPTIONS(-std=c++17 )
 if("${CMAKE_BUILD_TYPE}" MATCHES "Debug")
     message(STATUS "building for: debug")
     add_definitions("-g")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -std=c++17 -O1 -lboost_system -msse2 -msse3 -pthread -Wenum-compare") # -Wall
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -std=c++17 -O1  -msse2 -msse3 -pthread -Wenum-compare") # -Wall
 else()
     message(STATUS "building for: release")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -std=c++17 -O3 -lboost_system -msse2 -msse3 -pthread -Wenum-compare") # -Wall
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -std=c++17 -O3 -msse2 -msse3 -pthread -Wenum-compare") # -Wall
 endif()
 
 
@@ -22,6 +22,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -pthread -std=c++0x -std=c++17 -fexceptions")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -save-temps=obj")
 
 message("Current CPU archtecture: ${CMAKE_SYSTEM_PROCESSOR}")
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)" )
@@ -43,15 +44,18 @@ else()
   add_definitions(-DMP_PROC_NUM=1)
 endif()
 
+# include (${CMAKE_SOURCE_DIR}/cmake/genPreprocessorFile.cmake)
+# source_header_dir(${CMAKE_SOURCE_DIR}/src/tools/tools_utils.hpp)
+
 find_package(OpenMP QUIET)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}   ${OpenMP_C_FLAGS}")
 
-find_package(Boost REQUIRED COMPONENTS filesystem iostreams program_options system serialization)
-if(Boost_FOUND)
-	INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
-	LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
-endif()
+# find_package(Boost REQUIRED COMPONENTS filesystem iostreams program_options system serialization)
+# if(Boost_FOUND)
+# 	INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
+# 	LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
+# endif()
 
 find_package(PythonLibs REQUIRED)
 find_path(MATPLOTLIB_CPP_INCLUDE_DIRS "matplotlibcpp.h")
@@ -75,7 +79,7 @@ find_package(catkin REQUIRED COMPONENTS
 # Add OpenCV if available
 # set(OpenCV_DIR "/home/uestc/opt/opencv/build")
 find_package(Eigen3 REQUIRED)
-find_package(PCL 1.8 REQUIRED)
+find_package(PCL 1.10 REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(ZLIB)
 find_package(GTSAM REQUIRED QUIET)
