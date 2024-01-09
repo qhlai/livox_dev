@@ -110,14 +110,14 @@ ${PROJECT_SOURCE_DIR}/src/pointcloud/*.hpp
 
 )
 
-add_executable(rtabmap_test1 
-  src/rtabmap_test.cpp
-  ${POINTCLOUD_SRC_FILES}
-)
-target_link_libraries(rtabmap_test1
- ${catkin_LIBRARIES} 
- ${PCL_LIBRARIES} 
- ${PYTHON_LIBRARIES}
-#  dbg_macro
- )
-target_include_directories(rtabmap_test1 PRIVATE ${PYTHON_INCLUDE_DIRS})
+# add_executable(rtabmap_test1 
+#   src/rtabmap_test.cpp
+#   ${POINTCLOUD_SRC_FILES}
+# )
+# target_link_libraries(rtabmap_test1
+#  ${catkin_LIBRARIES} 
+#  ${PCL_LIBRARIES} 
+#  ${PYTHON_LIBRARIES}
+# #  dbg_macro
+#  )
+# target_include_directories(rtabmap_test1 PRIVATE ${PYTHON_INCLUDE_DIRS})

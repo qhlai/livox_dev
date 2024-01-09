@@ -2,10 +2,18 @@ cmake_minimum_required(VERSION 2.8.3)
 project(pc_process)
 
 SET(CMAKE_BUILD_TYPE "Debug")
-
-ADD_COMPILE_OPTIONS(-std=c++17 )
-ADD_COMPILE_OPTIONS(-std=c++17 )
 set( CMAKE_CXX_FLAGS "-std=c++17 -O3" )
+ADD_COMPILE_OPTIONS(-std=c++17 )
+ADD_COMPILE_OPTIONS(-std=c++17 )
+if("${CMAKE_BUILD_TYPE}" MATCHES "Debug")
+    message(STATUS "building for: debug")
+    add_definitions("-g")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -std=c++17 -O1 -lboost_system -msse2 -msse3 -pthread -Wenum-compare") # -Wall
+else()
+    message(STATUS "building for: release")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -std=c++17 -O3 -lboost_system -msse2 -msse3 -pthread -Wenum-compare") # -Wall
+endif()
+
 
 add_definitions(-DROOT_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}/\")
 
@@ -39,6 +47,12 @@ find_package(OpenMP QUIET)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}   ${OpenMP_C_FLAGS}")
 
+find_package(Boost REQUIRED COMPONENTS filesystem iostreams program_options system serialization)
+if(Boost_FOUND)
+	INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
+	LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
+endif()
+
 find_package(PythonLibs REQUIRED)
 find_path(MATPLOTLIB_CPP_INCLUDE_DIRS "matplotlibcpp.h")
 # include(FetchContent)
@@ -58,14 +72,28 @@ find_package(catkin REQUIRED COMPONENTS
   eigen_conversions
 )
 
-
+# Add OpenCV if available
+# set(OpenCV_DIR "/home/uestc/opt/opencv/build")
 find_package(Eigen3 REQUIRED)
 find_package(PCL 1.8 REQUIRED)
+find_package(OpenCV REQUIRED)
+find_package(ZLIB)
+find_package(GTSAM REQUIRED QUIET)
+# find_package(cpprestsdk REQUIRED) #sudo apt-get install libcpprest-dev
+find_package(Ceres REQUIRED)
+
+add_subdirectory(${PROJECT_SOURCE_DIR}/libs/dbg-macro)
 
 message(Eigen: ${EIGEN3_INCLUDE_DIR})
+message(PCL: ${PCL_INCLUDE_DIRS})
+message(OpenCV: ${OpenCV_INCLUDE_DIRS})
+message(ZLIB: ${ZLIB_INCLUDE_DIRS})
+message(GTSAM: ${GTSAM_INCLUDE_DIR})
+message(Ceres: ${CERES_INCLUDE_DIRS})
+
 set (INCLUDE_DIRS
     ${PROJECT_SOURCE_DIR}/src
-    ${PROJECT_SOURCE_DIR}/lib/dbg-macro
+    # ${PROJECT_SOURCE_DIR}/lib/dbg-macro
     # ${PROJECT_SOURCE_DIR}/src/core
     # ${PROJECT_SOURCE_DIR}/src/map
     # ${PROJECT_SOURCE_DIR}/src/map/frames
@@ -88,6 +116,7 @@ include_directories(
   # include
   ${INCLUDE_DIRS}
   # src/lib/dbg-macro
+  ${PROJECT_SOURCE_DIR}/libs/dbg-macro
   )
 
 
@@ -131,9 +160,7 @@ target_include_directories(ply2oct PRIVATE ${PYTHON_INCLUDE_DIRS})
 # target_link_libraries(ply2oct_vis ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${PYTHON_LIBRARIES})
 # target_include_directories(ply2oct_vis PRIVATE ${PYTHON_INCLUDE_DIRS})
 
-add_executable(test src/test.cpp)
-target_link_libraries(test ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${PYTHON_LIBRARIES})
-target_include_directories(test PRIVATE ${PYTHON_INCLUDE_DIRS})
+
 
 add_executable(rtabmap_test 
   src/rtabmap_test.cpp
@@ -146,3 +173,12 @@ target_link_libraries(rtabmap_test
 #  dbg_macro
  )
 target_include_directories(rtabmap_test PRIVATE ${PYTHON_INCLUDE_DIRS})
+
+
+
+add_executable(test src/test.cpp)
+target_link_libraries(test ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${PYTHON_LIBRARIES})
+target_include_directories(test PRIVATE 
+${PYTHON_INCLUDE_DIRS} 
+${PROJECT_SOURCE_DIR}/src/libs/dbg-macro
+)

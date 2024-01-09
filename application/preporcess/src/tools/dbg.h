@@ -25,6 +25,7 @@ License (MIT):
   SOFTWARE.
 
 *****************************************************************************/
+// from https://github.com/sharkdp/dbg-macro
 
 #ifndef DBG_MACRO_DBG_H
 #define DBG_MACRO_DBG_H

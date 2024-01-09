@@ -123,100 +123,100 @@ void tf_trans(){
 //   std::cout << "Size: " << x << " x " << y << " x " << z << " m^3\n";
 //   std::cout << std::endl;
 // }
-void show_octmap(){
+// void show_octmap(){
 
-    pcl::octree::OctreePointCloud<POINT_TYPE> octree(0.5); // 设置
-    octree.setInputCloud(cloud_voxel_sum);
-    octree.addPointsFromInputCloud();
+//     pcl::octree::OctreePointCloud<POINT_TYPE> octree(0.5); // 设置
+//     octree.setInputCloud(cloud_voxel_sum);
+//     octree.addPointsFromInputCloud();
 
- // 使用 sizeof 运算符计算 OctreePointCloud 对象的大小
-    size_t octreeSize = sizeof(octree);
+//  // 使用 sizeof 运算符计算 OctreePointCloud 对象的大小
+//     size_t octreeSize = sizeof(octree);
 
-    std::cout << "Size of OctreePointCloud object: " << octreeSize << " bytes" << std::endl;
+//     std::cout << "Size of OctreePointCloud object: " << octreeSize << " bytes" << std::endl;
 
-    pcl::PointCloud<POINT_TYPE>::Ptr cloud(new pcl::PointCloud<POINT_TYPE>);
+//     pcl::PointCloud<POINT_TYPE>::Ptr cloud(new pcl::PointCloud<POINT_TYPE>);
 
-    // 将OctreePointCloud的点添加到PointCloud中
-for (auto it = octree.leaf_begin(); it != octree.leaf_end(); ++it) {
-    std::vector<int> indices;
-    it.getLeafContainer().getPointIndices(indices);
-    std::cout << "point: "<< indices.size() <<"1:"<< octreeSize <<  std::endl;
-    for (const int& index : indices) {
-        pcl::PointXYZRGB point = cloud_voxel_sum->points[index];
-        cloud->push_back(point);
+//     // 将OctreePointCloud的点添加到PointCloud中
+// for (auto it = octree.leaf_begin(); it != octree.leaf_end(); ++it) {
+//     std::vector<int> indices;
+//     it.getLeafContainer().getPointIndices(indices);
+//     std::cout << "point: "<< indices.size() <<"1:"<< octreeSize <<  std::endl;
+//     for (const int& index : indices) {
+//         pcl::PointXYZRGB point = cloud_voxel_sum->points[index];
+//         cloud->push_back(point);
         
-    }
-}
-
-// 可选的：如果需要，重新计算点云的宽度和高度
-cloud->width = cloud->size();
-cloud->height = 1;
-
-// 可选的：如果需要，设置其他 PointCloud 属性，如 is_dense
-cloud->is_dense = true;
-
-sensor_msgs::PointCloud2 cloud_msg;
-
-pcl::toROSMsg(*cloud, cloud_msg);
-cloud_msg.header.frame_id = "map";
-occupancy_grid_pub.publish(cloud_msg);
-//    // 创建可视化数据并发布到 RViz
-// visualization_msgs::MarkerArray markers;
-// visualization_msgs::Marker marker;
-// marker.header.frame_id = "your_frame_id"; // 设置坐标系
-// marker.type = visualization_msgs::Marker::CUBE_LIST;
-// marker.scale.x = 0.1; // 设置栅格的大小
-// marker.scale.y = 0.1;
-// marker.scale.z = 0.1;
-// marker.color.r = 0.0; // 设置颜色
-// marker.color.g = 1.0;
-// marker.color.b = 0.0;
-// marker.color.a = 0.5; // 设置透明度
-// marker.points.clear();
-
-// // 遍历 Octree 中的叶子节点，将其转换为可视化栅格
-// std::vector<int> leaf_indices;
-// std::vector<POINT_TYPE>  leaf_points;
-// std::vector<pcl::octree::OctreeContainerPointIndices> leaf_containers;
-
-//     // 创建一个 pcl::PointCloud 对象，用于存储转换后的点云数据
-//     pcl::PointCloud<pcl::PointXYZRGB>::Ptr pointcloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-
-//     // 遍历 Octree 中的叶子节点，并将数据添加到点云中
-//     for (auto it = octree.begin_leafs(); it != octree.end_leafs(); ++it) {
-//         if (octree.isNodeOccupied(*it)) {
-//             pcl::PointXYZRGB point;
-//             point.x = it.getX();
-//             point.y = it.getY();
-//             point.z = it.getZ();
-//             point.r = 255; // 设置点的颜色
-//             point.g = 0;
-//             point.b = 0;
-//             pointcloud->points.push_back(point);
-//         }
 //     }
-
-//     pointcloud->width = pointcloud->points.size();
-//     pointcloud->height = 1;
-// for (const int& idx : leaf_indices)
-// {
-//     pcl::PointXYZRGB point;
-//     point = cloud->points[idx];
-
-//     geometry_msgs::Point p;
-//     p.x = point.x;
-//     p.y = point.y;
-//     p.z = point.z;
-//     marker.points.push_back(p);
 // }
 
-// markers.markers.push_back(marker);
+// // 可选的：如果需要，重新计算点云的宽度和高度
+// cloud->width = cloud->size();
+// cloud->height = 1;
 
-// // 发布可视化数据
-// octree_marker_pub.publish(markers);
+// // 可选的：如果需要，设置其他 PointCloud 属性，如 is_dense
+// cloud->is_dense = true;
+
+// sensor_msgs::PointCloud2 cloud_msg;
+
+// pcl::toROSMsg(*cloud, cloud_msg);
+// cloud_msg.header.frame_id = "map";
+// occupancy_grid_pub.publish(cloud_msg);
+// //    // 创建可视化数据并发布到 RViz
+// // visualization_msgs::MarkerArray markers;
+// // visualization_msgs::Marker marker;
+// // marker.header.frame_id = "your_frame_id"; // 设置坐标系
+// // marker.type = visualization_msgs::Marker::CUBE_LIST;
+// // marker.scale.x = 0.1; // 设置栅格的大小
+// // marker.scale.y = 0.1;
+// // marker.scale.z = 0.1;
+// // marker.color.r = 0.0; // 设置颜色
+// // marker.color.g = 1.0;
+// // marker.color.b = 0.0;
+// // marker.color.a = 0.5; // 设置透明度
+// // marker.points.clear();
+
+// // // 遍历 Octree 中的叶子节点，将其转换为可视化栅格
+// // std::vector<int> leaf_indices;
+// // std::vector<POINT_TYPE>  leaf_points;
+// // std::vector<pcl::octree::OctreeContainerPointIndices> leaf_containers;
+
+// //     // 创建一个 pcl::PointCloud 对象，用于存储转换后的点云数据
+// //     pcl::PointCloud<pcl::PointXYZRGB>::Ptr pointcloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+
+// //     // 遍历 Octree 中的叶子节点，并将数据添加到点云中
+// //     for (auto it = octree.begin_leafs(); it != octree.end_leafs(); ++it) {
+// //         if (octree.isNodeOccupied(*it)) {
+// //             pcl::PointXYZRGB point;
+// //             point.x = it.getX();
+// //             point.y = it.getY();
+// //             point.z = it.getZ();
+// //             point.r = 255; // 设置点的颜色
+// //             point.g = 0;
+// //             point.b = 0;
+// //             pointcloud->points.push_back(point);
+// //         }
+// //     }
+
+// //     pointcloud->width = pointcloud->points.size();
+// //     pointcloud->height = 1;
+// // for (const int& idx : leaf_indices)
+// // {
+// //     pcl::PointXYZRGB point;
+// //     point = cloud->points[idx];
+
+// //     geometry_msgs::Point p;
+// //     p.x = point.x;
+// //     p.y = point.y;
+// //     p.z = point.z;
+// //     marker.points.push_back(p);
+// // }
+
+// // markers.markers.push_back(marker);
+
+// // // 发布可视化数据
+// // octree_marker_pub.publish(markers);
 
 
-}
+// }
 
 void cloud_map_cb(const sensor_msgs::PointCloud2::ConstPtr& msg) {
     cloud_map = *msg;
@@ -348,7 +348,7 @@ int main(int argc, char** argv) {
     // ros::Publisher occupancy_grid_pub = nh.advertise<nav_msgs::OccupancyGrid>("occupancy_grid", 1);
     occupancy_grid_pub = nh.advertise<sensor_msgs::PointCloud2>("octree_markers", 1);
 
-    ros::Subscriber sub_odometry = nh.subscribe<nav_msgs::Odometry>("/rtabmap/odom", 1, cloud_map_cb);
+    // ros::Subscriber sub_odometry = nh.subscribe<nav_msgs::Odometry>("/rtabmap/odom", 1, cloud_map_cb);
 #ifdef USE_RTABMAP_SUB
     tf_trans();
 
