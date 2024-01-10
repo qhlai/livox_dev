@@ -79,7 +79,7 @@ find_package(catkin REQUIRED COMPONENTS
 # Add OpenCV if available
 # set(OpenCV_DIR "/home/uestc/opt/opencv/build")
 find_package(Eigen3 REQUIRED)
-find_package(PCL 1.10 REQUIRED)
+find_package(PCL 1.8 REQUIRED)
 find_package(OpenCV REQUIRED)
 # find_package(ZLIB)
 # find_package(GTSAM REQUIRED QUIET)
@@ -122,7 +122,11 @@ include_directories(
   # src/lib/dbg-macro
   ${PROJECT_SOURCE_DIR}/libs/dbg-macro
   )
+link_directories(
+  ${PCL_LIBRARY_DIRS}
+  )
 
+add_definitions(${PCL_DEFINITIONS})
 
 
 
@@ -140,6 +144,18 @@ ${PROJECT_SOURCE_DIR}/src/pointcloud/*.cpp
 
 file(GLOB_RECURSE POINTCLOUD_INC_FILES   
 ${PROJECT_SOURCE_DIR}/src/pointcloud/*.hpp
+
+)
+
+
+
+file(GLOB_RECURSE POINTCLOUD_SEG_SRC_FILES   
+${PROJECT_SOURCE_DIR}/src/seg/*.cpp
+
+)
+
+file(GLOB_RECURSE POINTCLOUD_SEG_INC_FILES   
+${PROJECT_SOURCE_DIR}/src/seg/*.hpp
 
 )
 
@@ -180,9 +196,18 @@ target_include_directories(rtabmap_test PRIVATE ${PYTHON_INCLUDE_DIRS})
 
 
 
-add_executable(test src/test.cpp)
-target_link_libraries(test ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${PYTHON_LIBRARIES})
+add_executable(test 
+src/test.cpp
+${POINTCLOUD_SEG_SRC_FILES}
+)
+target_link_libraries(test 
+  ${catkin_LIBRARIES} 
+  ${PCL_LIBRARIES} 
+  ${PYTHON_LIBRARIES}
+  # 
+)
 target_include_directories(test PRIVATE 
-${PYTHON_INCLUDE_DIRS} 
-${PROJECT_SOURCE_DIR}/src/libs/dbg-macro
+  ${PYTHON_INCLUDE_DIRS} 
+  ${PROJECT_SOURCE_DIR}/src/libs/dbg-macro
+  ${POINTCLOUD_SEG_INC_FILES}
 )
