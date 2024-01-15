@@ -86,7 +86,10 @@
 			"valarray": "cpp",
 			"variant": "cpp",
 			"bit": "cpp",
-			"queue": "cpp"
+			"queue": "cpp",
+			"core": "cpp",
+			"numericaldiff": "cpp",
+			"*.tpp": "cpp"
 		}
 	}
 }

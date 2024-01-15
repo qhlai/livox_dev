@@ -20,22 +20,22 @@
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/filters/passthrough.h>  //直通滤波器头文件
 
-// #include "base/common.hpp"
+#include "base/common.hpp"
 #include "seg/seg.hpp"
 
 
 
 #include "tools/tools_value_redefine.hpp"
-#include "tools/tools_logger_lite.hpp"
+// #include "tools/tools_logger_lite.hpp"
 
 
 #include <boost/thread/thread.hpp>
 
 
-using POINTTYPE = pcl::PointXYZ;
-using POINTNORMALTYPE = pcl::PointXYZINormal;
-using POINTCLOUD = pcl::PointCloud<POINTTYPE>;
-using PointRGB = pcl::PointXYZRGB;
+// using POINTTYPE = pcl::PointXYZ;
+// using POINTNORMALTYPE = pcl::PointXYZINormal;
+// using POINTCLOUD = pcl::PointCloud<POINTTYPE>;
+// using PointRGB = pcl::PointXYZRGB;
 
 // boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer(new pcl::visualization::PCLVisualizer("planar segment"));
 
@@ -45,13 +45,7 @@ using PointRGB = pcl::PointXYZRGB;
 
 FILE *fpWrite=fopen("cloud_all.txt","w");//a续写，w清除后写入
 
-template <typename PointT>
-void pointcloud_size(typename pcl::PointCloud<PointT>::Ptr cloud) {
-    size_t numPoints = cloud->width * cloud->height;
-    size_t pointSize = sizeof(cloud->points[0]);
-    size_t totalSize = numPoints * pointSize;
-    std::cout << "PointCloud 的内存占用为: " << totalSize << " 字节. " <<cloud->width <<","<< cloud->height <<","<<sizeof(cloud->points[0])<< std::endl;
-}
+
 
 pcl::PointCloud<pcl::PointXYZINormal>::Ptr pc_merge(pcl::PointCloud<pcl::PointXYZI>::Ptr& xyz_cloud, pcl::PointCloud<pcl::Normal>::Ptr& normals_cloud){
     pcl::PointCloud<pcl::PointXYZINormal>::Ptr combined_cloud(new pcl::PointCloud<pcl::PointXYZINormal>);
@@ -72,7 +66,7 @@ pcl::PointCloud<pcl::PointXYZINormal>::Ptr pc_merge(pcl::PointCloud<pcl::PointXY
 
 }
 
-loglevel_e loglevel = logDEBUG4;
+// loglevel_e loglevel = logDEBUG4;
 
 int main(int argc, char** argv)
 {
@@ -85,7 +79,7 @@ int main(int argc, char** argv)
     {
         std::cout << "Usage: pcd_to_ply input.pcd output.ply" << std::endl;
 
-        logit(logWARN) << "defalut " ;
+        // logit(logWARN) << "defalut " ;
         std::string path_prefix="/home/uestc/ros/mid360_ws/src/application/preporcess/dataset/";
 
         input_file =path_prefix+"2.pcd";
@@ -104,7 +98,7 @@ int main(int argc, char** argv)
     if (pcl::io::loadPCDFile<POINTTYPE>(input_file, *cloud) == -1)
     {
         // log(logFATAL) << "Failed to load PCD file: " << input_file ;
-        logit(logFATAL) << "Failed to load PCD file " ;
+        // logit(logFATAL) << "Failed to load PCD file " ;
         return -1;
 
     }
@@ -115,7 +109,12 @@ int main(int argc, char** argv)
     seg.cloudPassThrough(cloud,"y",-20,20);
     seg.cloudPassThrough(cloud,"x",5,50);
     seg.cloudPassThrough(cloud,"z",-5,15);
-    seg.Plane_fitting(cloud);
+
+    seg.projection(cloud);
+
+    // seg.Plane_fitting(cloud);
+    seg.Plane_fitting_normal(cloud);
+
     for(std::size_t i=0; i< seg.cloud_all->size(); i++)
         fprintf(fpWrite,"%2.3f %2.3f %2.3f %d %d %d \n",seg.cloud_all->points[i].x,seg.cloud_all->points[i].y,seg.cloud_all->points[i].z,seg.cloud_all->points[i].r,seg.cloud_all->points[i].g,seg.cloud_all->points[i].b);
     fclose(fpWrite);
@@ -150,7 +149,7 @@ int main(int argc, char** argv)
     // seg.setModelType(pcl::SACMODEL_NORMAL_PLANE);
     // seg.setMethodType(pcl::SAC_RANSAC);
     // seg.setMaxIterations(100);
-    // seg.setDistanceThreshold(0.01);  // 设置距离阈值
+    // seg.setDistanceThresho    template <typename PointT>// 设置距离阈值
 
 
     // // 设置输入点云和法向量

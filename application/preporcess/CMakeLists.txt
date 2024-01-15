@@ -117,6 +117,7 @@ include_directories(
   ${EIGEN3_INCLUDE_DIR}
   ${PCL_INCLUDE_DIRS}
   ${PYTHON_INCLUDE_DIRS}
+  ${OpenCV_INCLUDE_DIRS}
   # include
   ${INCLUDE_DIRS}
   # src/lib/dbg-macro
@@ -124,6 +125,9 @@ include_directories(
   )
 link_directories(
   ${PCL_LIBRARY_DIRS}
+
+  
+  ${OpenCV_LIBRARY_DIRS}
   )
 
 add_definitions(${PCL_DEFINITIONS})
@@ -204,6 +208,7 @@ target_link_libraries(test
   ${catkin_LIBRARIES} 
   ${PCL_LIBRARIES} 
   ${PYTHON_LIBRARIES}
+  ${OpenCV_LIBRARIES}
   # 
 )
 target_include_directories(test PRIVATE 
