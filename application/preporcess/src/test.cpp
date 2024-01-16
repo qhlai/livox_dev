@@ -110,11 +110,11 @@ int main(int argc, char** argv)
     seg.cloudPassThrough(cloud,"x",5,50);
     seg.cloudPassThrough(cloud,"z",-5,15);
 
-    seg.projection(cloud);
+    // seg.projection(cloud);
 
     // seg.Plane_fitting(cloud);
-    seg.Plane_fitting_normal(cloud);
-
+    // seg.Plane_fitting_normal(cloud);
+    // seg.normal_viz(cloud);
     for(std::size_t i=0; i< seg.cloud_all->size(); i++)
         fprintf(fpWrite,"%2.3f %2.3f %2.3f %d %d %d \n",seg.cloud_all->points[i].x,seg.cloud_all->points[i].y,seg.cloud_all->points[i].z,seg.cloud_all->points[i].r,seg.cloud_all->points[i].g,seg.cloud_all->points[i].b);
     fclose(fpWrite);

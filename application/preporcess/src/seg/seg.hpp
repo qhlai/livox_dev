@@ -49,6 +49,7 @@ public:
     // cv::Mat projection(typename pcl::PointCloud<PointT>::Ptr cloud);
     cv::Mat projection(POINTCLOUD::Ptr cloud);
     // cv::Mat projection(pcl::PointCloud<PointT>::Ptr cloud);
+    void normal_viz(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input);
 
     void backprojection(POINTCLOUD::Ptr cloud);
     void output_plane(pcl::PointCloud<PointRGB>::Ptr cloud_plane,int begin);

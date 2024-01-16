@@ -78,6 +78,7 @@ cv::Mat Segment::projection(POINTCLOUD::Ptr cloud){
 
 }
 
+
 void Segment::backprojection(POINTCLOUD::Ptr cloud){
 
 }
@@ -92,6 +93,31 @@ void Segment::cloudPassThrough(POINTCLOUD::Ptr cloud,const char *axis,int min,in
      passthrough.filter(*cloud);//);//执行滤波
 
 }
+
+void Segment::normal_viz(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)
+{
+    // pointcloud_size<POINTTYPE>(cloud);
+
+    // 创建法向量估计对象
+    pcl::NormalEstimation<POINTTYPE, pcl::Normal> ne;
+    ne.setInputCloud(cloud_input);
+
+
+    // 估计法向量
+    pcl::search::KdTree<POINTTYPE>::Ptr tree(new pcl::search::KdTree<POINTTYPE>);
+    ne.setSearchMethod(tree);
+    pcl::PointCloud<pcl::Normal>::Ptr cloud_normals(new pcl::PointCloud<pcl::Normal>);
+    ne.setRadiusSearch(0.05);  // 设置法向量估计半径
+    ne.compute(*cloud_normals);
+    viewer->addPointCloud<pcl::PointXYZ>(cloud_input, "cloud");
+
+
+    // 添加法线到可视化
+    viewer->addPointCloudNormals<pcl::PointXYZ, pcl::Normal>(cloud_input, cloud_normals, 10, 0.05, "normals");
+
+
+}
+
 void Segment::Plane_fitting_normal(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)
 {
     // pointcloud_size<POINTTYPE>(cloud);
