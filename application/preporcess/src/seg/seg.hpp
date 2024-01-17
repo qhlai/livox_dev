@@ -9,7 +9,7 @@ namespace PointCloud_process{
 
 // extern loglevel_e loglevel;
 
-#define DisThre 0.03//平面分割阈值
+#define DisThre 0.05//平面分割阈值
 
 // #define Lidar_FOV_Width 1280
 // #define Lidar_FOV_Height 960
@@ -45,12 +45,14 @@ public:
 
     void Plane_fitting(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input);
     void Plane_fitting_normal(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input);
+    void Plane_fitting_cluster_eu(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input);
+    void Plane_fitting_cluster_growth(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input);
     // template <typename PointT>
     // cv::Mat projection(typename pcl::PointCloud<PointT>::Ptr cloud);
     cv::Mat projection(POINTCLOUD::Ptr cloud);
     // cv::Mat projection(pcl::PointCloud<PointT>::Ptr cloud);
     void normal_viz(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input);
-
+    
     void backprojection(POINTCLOUD::Ptr cloud);
     void output_plane(pcl::PointCloud<PointRGB>::Ptr cloud_plane,int begin);
     void cloudPassThrough(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,const char *axis,int min,int max);

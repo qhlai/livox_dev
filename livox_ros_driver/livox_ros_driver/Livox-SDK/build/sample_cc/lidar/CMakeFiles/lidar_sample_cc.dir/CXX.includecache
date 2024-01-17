@@ -46,9 +46,9 @@ cxxabi.h
 cstdlib
 -
 
-/home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar/lds_lidar.cpp
+/home/uestc/ros/mid360_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar/lds_lidar.cpp
 lds_lidar.h
-/home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar/lds_lidar.h
+/home/uestc/ros/mid360_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar/lds_lidar.h
 stdio.h
 -
 string.h
@@ -58,7 +58,7 @@ thread
 memory
 -
 
-/home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar/lds_lidar.h
+/home/uestc/ros/mid360_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar/lds_lidar.h
 memory
 -
 vector
@@ -66,11 +66,11 @@ vector
 string
 -
 livox_def.h
-/home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar/livox_def.h
+/home/uestc/ros/mid360_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar/livox_def.h
 livox_sdk.h
-/home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar/livox_sdk.h
+/home/uestc/ros/mid360_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar/livox_sdk.h
 
-/home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar/main.cpp
+/home/uestc/ros/mid360_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar/main.cpp
 stdio.h
 -
 stdlib.h
@@ -82,7 +82,7 @@ thread
 chrono
 -
 cmdline.h
-/home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar/cmdline.h
+/home/uestc/ros/mid360_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar/cmdline.h
 lds_lidar.h
-/home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar/lds_lidar.h
+/home/uestc/ros/mid360_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar/lds_lidar.h
 

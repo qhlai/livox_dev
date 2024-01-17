@@ -4,12 +4,15 @@
 #include <pcl/filters/extract_indices.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/features/normal_3d.h>
+#include <pcl/features/normal_3d_omp.h>//使用OMP需要添加的头文件
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/sample_consensus/method_types.h>
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/filters/passthrough.h>  //直通滤波器头文件
 #include <pcl/common/transforms.h>
+#include <pcl/segmentation/extract_clusters.h>
+#include <pcl/segmentation/region_growing.h>
 
 #include <opencv2/opencv.hpp>
 #include <Eigen/Core>
@@ -99,15 +102,18 @@ void Segment::normal_viz(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)
     // pointcloud_size<POINTTYPE>(cloud);
 
     // 创建法向量估计对象
-    pcl::NormalEstimation<POINTTYPE, pcl::Normal> ne;
+    // pcl::NormalEstimation<POINTTYPE, pcl::Normal> ne;
+    pcl::NormalEstimationOMP<POINTTYPE, pcl::Normal> ne;//OMP加速
     ne.setInputCloud(cloud_input);
+    ne.setNumberOfThreads(10);//设置openMP的线程数
 
 
     // 估计法向量
     pcl::search::KdTree<POINTTYPE>::Ptr tree(new pcl::search::KdTree<POINTTYPE>);
     ne.setSearchMethod(tree);
     pcl::PointCloud<pcl::Normal>::Ptr cloud_normals(new pcl::PointCloud<pcl::Normal>);
-    ne.setRadiusSearch(0.05);  // 设置法向量估计半径
+    ne.setRadiusSearch(0.3);  // 设置法向量估计半径
+    // ne.setKSearch(10);//点云法向计算时，需要所搜的近邻点大小
     ne.compute(*cloud_normals);
     viewer->addPointCloud<pcl::PointXYZ>(cloud_input, "cloud");
 
@@ -118,22 +124,160 @@ void Segment::normal_viz(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)
 
 }
 
+void Segment::Plane_fitting_cluster_growth(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)
+{
+
+    pcl::PointCloud<pcl::Normal>::Ptr cloud_normals(new pcl::PointCloud<pcl::Normal>);
+    pcl::search::KdTree<POINTTYPE>::Ptr tree(new pcl::search::KdTree<POINTTYPE>);
+    {
+        pcl::NormalEstimationOMP<POINTTYPE, pcl::Normal> ne;//OMP加速
+        ne.setInputCloud(cloud_input);
+        ne.setNumberOfThreads(10);//设置openMP的线程数
+        // 估计法向量
+        
+        ne.setSearchMethod(tree);
+        
+        ne.setRadiusSearch(0.3);  // 设置法向量估计半径
+        // ne.setKSearch(10);//点云法向计算时，需要所搜的近邻点大小
+        ne.compute(*cloud_normals);
+    }    
+
+    //区域增长聚类分割对象	< 点 ， 法 线 > 
+    pcl::RegionGrowing<pcl::PointXYZ, pcl::Normal> reg; 
+    reg.setMinClusterSize (50);	//最小的聚类的点数
+    reg.setMaxClusterSize (1000000);//最大的聚类的点数
+    reg.setSearchMethod (tree);	//搜索方式
+    reg.setNumberOfNeighbours (30); //设置搜索的邻域点的个数
+    reg.setInputCloud (cloud_input);	//输入点
+    //reg.setIndices (indices); 
+    reg.setInputNormals (cloud_normals);	//输入的法线
+    reg.setSmoothnessThreshold (3.0 / 180.0 * M_PI);//设置平滑度 法线差值阈值
+    reg.setCurvatureThreshold (1.0);	//设置曲率的阀值
+
+        // 获取聚类结果
+    std::vector<pcl::PointIndices> clusters;
+    reg.extract(clusters);
+
+    // 遍历和处理每个聚类
+    int j = 0;    
+    int m = 0;
+    for (const auto& cluster : clusters) {
+        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster(new pcl::PointCloud<pcl::PointXYZ>);
+        for (const auto& idx : cluster.indices)
+            cloud_cluster->points.push_back(cloud_input->points[idx]); // 添加点到当前簇
+        cloud_cluster->width = cloud_cluster->points.size();
+        cloud_cluster->height = 1;
+        cloud_cluster->is_dense = true;
+
+        if (cloud_cluster->size()>40)
+        {
+            m++;
+            // 可视化相关的代码
+            R = rand() % (256) + 0;
+            G = rand() % (256) + 0;
+            B = rand() % (256) + 0;
+            cout<<"cloud_cluster->size()="<<cloud_cluster->size()<<endl;
+            pcl::PointCloud<PointRGB>::Ptr cloud_cluster_vis(new pcl::PointCloud<PointRGB>);
+            for(std::size_t k=0; k<cloud_cluster->size(); k++ )
+            {
+                PointRGB thispoint;
+                thispoint.x=cloud_cluster->points[k].x;
+                thispoint.y=cloud_cluster->points[k].y;
+                thispoint.z=cloud_cluster->points[k].z;
+                thispoint.r=R;
+                thispoint.g=G;
+                thispoint.b=B;
+                cloud_cluster_vis->push_back(thispoint);
+                cloud_all->push_back(thispoint);
+            }
+            output_plane(cloud_cluster_vis,m);
+        }
+    }     
+}
+
+void Segment::Plane_fitting_cluster_eu(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)
+{
+
+    // 创建KdTree对象
+    pcl::search::KdTree<pcl::PointXYZ>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZ>);
+    tree->setInputCloud(cloud_input);
+
+    // 创建一个用于提取聚类的EuclideanClusterExtraction对象
+    std::vector<pcl::PointIndices> cluster_indices;
+    pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
+    ec.setClusterTolerance(0.8); // 2cm
+    ec.setMinClusterSize(100);
+    ec.setMaxClusterSize(50000);
+    ec.setSearchMethod(tree);
+    ec.setInputCloud(cloud_input);
+    ec.extract(cluster_indices);
+
+    int m = 0;
+    // 遍历每个簇
+    int j = 0;
+    for (std::vector<pcl::PointIndices>::const_iterator it = cluster_indices.begin(); it != cluster_indices.end(); ++it) {
+        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster(new pcl::PointCloud<pcl::PointXYZ>);
+        for (const auto& idx : it->indices)
+            cloud_cluster->points.push_back(cloud_input->points[idx]); // 添加点到当前簇
+        cloud_cluster->width = cloud_cluster->points.size();
+        cloud_cluster->height = 1;
+        cloud_cluster->is_dense = true;
+
+        // std::cout << "PointCloud representing the Cluster: " << cloud_cluster->points.size() << " data points." << std::endl;
+        // std::stringstream ss;
+        // ss << "cloud_cluster_" << j << ".pcd";
+        // pcl::io::savePCDFileASCII(ss.str(), *cloud_cluster); // 保存簇
+
+        // if(cloud_cluster->size()<100){
+        //     std::cout << "plane less than 100, exit."  << std::endl;
+        //     break;
+        // }
+        if (cloud_cluster->size()>40)
+        {
+            m++;
+            // 可视化相关的代码
+            R = rand() % (256) + 0;
+            G = rand() % (256) + 0;
+            B = rand() % (256) + 0;
+            cout<<"cloud_cluster->size()="<<cloud_cluster->size()<<endl;
+            pcl::PointCloud<PointRGB>::Ptr cloud_cluster_vis(new pcl::PointCloud<PointRGB>);
+            for(std::size_t k=0; k<cloud_cluster->size(); k++ )
+            {
+                PointRGB thispoint;
+                thispoint.x=cloud_cluster->points[k].x;
+                thispoint.y=cloud_cluster->points[k].y;
+                thispoint.z=cloud_cluster->points[k].z;
+                thispoint.r=R;
+                thispoint.g=G;
+                thispoint.b=B;
+                cloud_cluster_vis->push_back(thispoint);
+                cloud_all->push_back(thispoint);
+            }
+            output_plane(cloud_cluster_vis,m);
+        }
+        j++;
+    }
+
+
+}
+
 void Segment::Plane_fitting_normal(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)
 {
     // pointcloud_size<POINTTYPE>(cloud);
 
     // 创建法向量估计对象
-    pcl::NormalEstimation<POINTTYPE, pcl::Normal> ne;
+    pcl::NormalEstimationOMP<POINTTYPE, pcl::Normal> ne;//OMP加速
     ne.setInputCloud(cloud_input);
+    ne.setNumberOfThreads(10);//设置openMP的线程数
 
-    // 创建一个用于存储法向量的PointCloud
-    pcl::PointCloud<pcl::Normal>::Ptr cloud_normals(new pcl::PointCloud<pcl::Normal>);
+
     // 估计法向量
     pcl::search::KdTree<POINTTYPE>::Ptr tree(new pcl::search::KdTree<POINTTYPE>);
     ne.setSearchMethod(tree);
-    ne.setRadiusSearch(0.03);  // 设置法向量估计半径
+    pcl::PointCloud<pcl::Normal>::Ptr cloud_normals(new pcl::PointCloud<pcl::Normal>);
+    ne.setRadiusSearch(0.3);  // 设置法向量估计半径
+    // ne.setKSearch(10);//点云法向计算时，需要所搜的近邻点大小
     ne.compute(*cloud_normals);
-
 
     // logit(logDEBUG3) << cloud_normals->width <<","<< cloud_normals->height <<","<< sizeof(cloud_normals->points[0]);
     pointcloud_size<pcl::Normal>(cloud_normals);
@@ -190,7 +334,7 @@ void Segment::Plane_fitting_normal(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_inp
             PCL_ERROR("Could not estimate a planar model for the given dataset.");
             break;
         }
-
+        std::cout << "remaining points: " << cloud_input->size() << std::endl;
         pcl::ExtractIndices<pcl::PointXYZ> extract;
         extract.setInputCloud(cloud_input);
         extract.setIndices(inliers);
@@ -200,7 +344,10 @@ void Segment::Plane_fitting_normal(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_inp
         extract_normal.setInputCloud(cloud_normals);
         extract_normal.setIndices(inliers);
         // extract_normal.filter(*cloud_plane_normals);//输出平面
-
+        if(cloud_plane->size()<100){
+            std::cout << "plane less than 100, exit."  << std::endl;
+            break;
+        }
         if (cloud_plane->size()>40)
         {
             m++;
@@ -224,6 +371,7 @@ void Segment::Plane_fitting_normal(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_inp
             }
             output_plane(cloud_cluster,m);
         }
+
         // 移除plane
         extract.setNegative(true);
         extract.filter(*cloud_p);

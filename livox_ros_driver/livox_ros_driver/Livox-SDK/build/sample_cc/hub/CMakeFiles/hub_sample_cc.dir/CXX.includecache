@@ -46,9 +46,9 @@ cxxabi.h
 cstdlib
 -
 
-/home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/hub/lds_hub.cpp
+/home/uestc/ros/mid360_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/hub/lds_hub.cpp
 lds_hub.h
-/home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/hub/lds_hub.h
+/home/uestc/ros/mid360_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/hub/lds_hub.h
 stdio.h
 -
 string.h
@@ -58,7 +58,7 @@ thread
 memory
 -
 
-/home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/hub/lds_hub.h
+/home/uestc/ros/mid360_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/hub/lds_hub.h
 memory
 -
 vector
@@ -66,11 +66,11 @@ vector
 string
 -
 livox_def.h
-/home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/hub/livox_def.h
+/home/uestc/ros/mid360_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/hub/livox_def.h
 livox_sdk.h
-/home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/hub/livox_sdk.h
+/home/uestc/ros/mid360_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/hub/livox_sdk.h
 
-/home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/hub/main.cpp
+/home/uestc/ros/mid360_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/hub/main.cpp
 stdio.h
 -
 stdlib.h
@@ -80,9 +80,9 @@ thread
 chrono
 -
 cmdline.h
-/home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/hub/cmdline.h
+/home/uestc/ros/mid360_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/hub/cmdline.h
 string.h
 -
 lds_hub.h
-/home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/hub/lds_hub.h
+/home/uestc/ros/mid360_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/hub/lds_hub.h
 

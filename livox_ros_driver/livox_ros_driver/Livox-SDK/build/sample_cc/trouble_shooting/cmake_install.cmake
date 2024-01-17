@@ -1,4 +1,4 @@
-# Install script for directory: /home/hanglok/pc_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/trouble_shooting
+# Install script for directory: /home/uestc/ros/mid360_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/trouble_shooting
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

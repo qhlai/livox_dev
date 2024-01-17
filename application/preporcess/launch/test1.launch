@@ -1,0 +1,4 @@
+<launch>
+<node pkg="pc_process" type="test" name="test1" output="screen" />
+
+</launch>
