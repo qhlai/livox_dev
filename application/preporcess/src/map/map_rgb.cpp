@@ -8,7 +8,7 @@
 // #include "config_backend.hpp"
 
 // #include "common_tools.h"
-namespace mersys {
+namespace map {
 
 cv::RNG g_rng = cv::RNG(0);
 // std::atomic<long> g_pts_index(0);

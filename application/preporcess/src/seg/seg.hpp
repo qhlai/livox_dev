@@ -19,13 +19,14 @@ namespace PointCloud_process{
 // #define Lidar_Focal_Length 616
 
 
-template <typename PointT>
-void pointcloud_size(typename pcl::PointCloud<PointT>::Ptr cloud) {
+template <typename PointTy>
+void pointcloud_size(typename pcl::PointCloud<PointTy>::Ptr cloud) {
     size_t numPoints = cloud->width * cloud->height;
     size_t pointSize = sizeof(cloud->points[0]);
     size_t totalSize = numPoints * pointSize;
     std::cout << "PointCloud 的内存占用为: " << totalSize << " 字节. " <<cloud->width <<","<< cloud->height <<","<<sizeof(cloud->points[0])<< std::endl;
 }
+
 
 class Segment{
 public:
@@ -35,27 +36,29 @@ public:
     uint8_t B; 
 
     pcl::PointCloud<PointRGB>::Ptr cloud_all;
-
+    // pcl::search::KdTree<POINTTYPE>::Ptr tree;
     // boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer(new pcl::visualization::PCLVisualizer("planar segment"));
     boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
     // boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer(new pcl::visualization::PCLVisualizer("planar segment"));
     // POINTCLOUD::Ptr cloud(new POINTCLOUD);
     // POINTCLOUD::Ptr cloud_inner(new POINTCLOUD);
     // POINTCLOUD::Ptr cloud_outer(new POINTCLOUD);
+    virtual auto clac_normal(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)->pcl::PointCloud<pcl::Normal>::Ptr;
 
-    void Plane_fitting(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input);
-    void Plane_fitting_normal(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input);
-    void Plane_fitting_cluster_eu(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input);
-    void Plane_fitting_cluster_growth(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input);
-    // template <typename PointT>
-    // cv::Mat projection(typename pcl::PointCloud<PointT>::Ptr cloud);
-    cv::Mat projection(POINTCLOUD::Ptr cloud);
-    // cv::Mat projection(pcl::PointCloud<PointT>::Ptr cloud);
-    void normal_viz(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input);
+    virtual auto Plane_fitting(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)->void;
+    virtual auto Plane_fitting_normal(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)->void;
+    virtual auto Plane_fitting_cluster_eu(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)->void;
+    virtual auto Plane_fitting_cluster_growth(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)->void;
+    virtual auto Plane_fitting_cluster_growth_v(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)->void;
+    // template <typename PointTy>
+    // cv::Mat projection(typename pcl::PointCloud<PointTy>::Ptr cloud);
+    virtual auto projection(POINTCLOUD::Ptr cloud)->cv::Mat ;
+    // cv::Mat projection(pcl::PointCloud<PointTy>::Ptr cloud);
+    virtual auto normal_viz(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)->void;
     
-    void backprojection(POINTCLOUD::Ptr cloud);
-    void output_plane(pcl::PointCloud<PointRGB>::Ptr cloud_plane,int begin);
-    void cloudPassThrough(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,const char *axis,int min,int max);
+    virtual auto backprojection(POINTCLOUD::Ptr cloud)->void;
+    virtual auto output_plane(pcl::PointCloud<PointRGB>::Ptr cloud_plane,int begin)->void;
+    virtual auto cloudPassThrough(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,const char *axis,int min,int max)->void;
 };
 
 // #include "seg.tpp" 

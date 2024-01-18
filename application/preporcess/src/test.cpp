@@ -28,7 +28,7 @@
 #include "tools/tools_value_redefine.hpp"
 // #include "tools/tools_logger_lite.hpp"
 
-
+#include "map/rbg_pointcloud.hpp"
 #include <boost/thread/thread.hpp>
 
 

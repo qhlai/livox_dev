@@ -45,7 +45,7 @@
 
 
 
-namespace mersys {
+namespace map {
 
 extern cv::RNG g_rng;
 

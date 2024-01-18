@@ -2,16 +2,15 @@ cmake_minimum_required(VERSION 2.8.3)
 project(pc_process)
 
 SET(CMAKE_BUILD_TYPE "Debug")
-set( CMAKE_CXX_FLAGS "-std=c++17 -O3" )
-ADD_COMPILE_OPTIONS(-std=c++17 )
-ADD_COMPILE_OPTIONS(-std=c++17 )
+set( CMAKE_CXX_FLAGS "-std=c++2a -O3" )
+ADD_COMPILE_OPTIONS(-std=c++2a )
 if("${CMAKE_BUILD_TYPE}" MATCHES "Debug")
     message(STATUS "building for: debug")
     add_definitions("-g")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -std=c++17 -O1  -msse2 -msse3 -pthread -Wenum-compare") # -Wall
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -std=c++2a -O1  -msse2 -msse3 -pthread -Wenum-compare") # -Wall
 else()
     message(STATUS "building for: release")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -std=c++17 -O3 -msse2 -msse3 -pthread -Wenum-compare") # -Wall
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -std=c++20a -O3 -msse2 -msse3 -pthread -Wenum-compare") # -Wall
 endif()
 
 
@@ -79,7 +78,7 @@ find_package(catkin REQUIRED COMPONENTS
 # Add OpenCV if available
 # set(OpenCV_DIR "/home/uestc/opt/opencv/build")
 find_package(Eigen3 REQUIRED)
-find_package(PCL 1.8 REQUIRED)
+find_package(PCL 1.10 REQUIRED)
 find_package(OpenCV REQUIRED)
 # find_package(ZLIB)
 # find_package(GTSAM REQUIRED QUIET)

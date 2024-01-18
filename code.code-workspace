@@ -89,7 +89,11 @@
 			"queue": "cpp",
 			"core": "cpp",
 			"numericaldiff": "cpp",
-			"*.tpp": "cpp"
+			"*.tpp": "cpp",
+			"geometry": "cpp",
+			"ranges": "cpp",
+			"compare": "cpp",
+			"concepts": "cpp"
 		}
 	}
 }

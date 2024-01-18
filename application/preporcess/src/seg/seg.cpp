@@ -33,7 +33,7 @@ namespace PointCloud_process{
     }
 
 
-cv::Mat Segment::projection(POINTCLOUD::Ptr cloud){
+auto Segment::projection(POINTCLOUD::Ptr cloud)->cv::Mat {
 
     //pcl_viewer '/home/hanglok/pc_ws/src/application/preporcess/dataset/1.pcd'  -ax 5
 
@@ -82,12 +82,12 @@ cv::Mat Segment::projection(POINTCLOUD::Ptr cloud){
 }
 
 
-void Segment::backprojection(POINTCLOUD::Ptr cloud){
+auto Segment::backprojection(POINTCLOUD::Ptr cloud)->void {
 
 }
 
 //直通滤波器对点云进行处理
-void Segment::cloudPassThrough(POINTCLOUD::Ptr cloud,const char *axis,int min,int max)
+auto Segment::cloudPassThrough(POINTCLOUD::Ptr cloud,const char *axis,int min,int max)->void
 {
      pcl::PassThrough<POINTTYPE> passthrough;
      passthrough.setInputCloud(cloud);//输入点云
@@ -97,7 +97,7 @@ void Segment::cloudPassThrough(POINTCLOUD::Ptr cloud,const char *axis,int min,in
 
 }
 
-void Segment::normal_viz(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)
+auto Segment::normal_viz(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)->void
 {
     // pointcloud_size<POINTTYPE>(cloud);
 
@@ -124,7 +124,7 @@ void Segment::normal_viz(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)
 
 }
 
-void Segment::Plane_fitting_cluster_growth(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)
+auto Segment::Plane_fitting_cluster_growth(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)->void
 {
 
     pcl::PointCloud<pcl::Normal>::Ptr cloud_normals(new pcl::PointCloud<pcl::Normal>);
@@ -165,6 +165,7 @@ void Segment::Plane_fitting_cluster_growth(pcl::PointCloud<pcl::PointXYZ>::Ptr c
         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster(new pcl::PointCloud<pcl::PointXYZ>);
         for (const auto& idx : cluster.indices)
             cloud_cluster->points.push_back(cloud_input->points[idx]); // 添加点到当前簇
+        // *cloud_cluster=pcl::PointCloud<pcl::PointXYZ>(cloud_input, cluster.indices);
         cloud_cluster->width = cloud_cluster->points.size();
         cloud_cluster->height = 1;
         cloud_cluster->is_dense = true;
@@ -195,7 +196,100 @@ void Segment::Plane_fitting_cluster_growth(pcl::PointCloud<pcl::PointXYZ>::Ptr c
     }     
 }
 
-void Segment::Plane_fitting_cluster_eu(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)
+auto Segment::clac_normal(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)->pcl::PointCloud<pcl::Normal>::Ptr
+{
+    pcl::PointCloud<pcl::Normal>::Ptr cloud_normals(new pcl::PointCloud<pcl::Normal>);
+    pcl::search::KdTree<POINTTYPE>::Ptr tree(new pcl::search::KdTree<POINTTYPE>);
+    pcl::NormalEstimationOMP<POINTTYPE, pcl::Normal> ne;//OMP加速
+    ne.setInputCloud(cloud_input);
+    ne.setNumberOfThreads(10);//设置openMP的线程数
+    // 估计法向量
+    
+    ne.setSearchMethod(tree);
+    
+    ne.setRadiusSearch(0.3);  // 设置法向量估计半径
+    // ne.setKSearch(10);//点云法向计算时，需要所搜的近邻点大小
+    ne.compute(*cloud_normals);
+
+    return cloud_normals;
+}
+auto Segment::Plane_fitting_cluster_growth_v(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)->void
+{
+
+    pcl::PointCloud<pcl::Normal>::Ptr cloud_normals=clac_normal(cloud_input);
+    // pcl::search::KdTree<POINTTYPE>::Ptr tree(new pcl::search::KdTree<POINTTYPE>);
+    // {
+    //     pcl::NormalEstimationOMP<POINTTYPE, pcl::Normal> ne;//OMP加速
+    //     ne.setInputCloud(cloud_input);
+    //     ne.setNumberOfThreads(10);//设置openMP的线程数
+    //     // 估计法向量
+        
+    //     ne.setSearchMethod(tree);
+        
+    //     ne.setRadiusSearch(0.3);  // 设置法向量估计半径
+    //     // ne.setKSearch(10);//点云法向计算时，需要所搜的近邻点大小
+    //     ne.compute(*cloud_normals);
+    // }    
+
+    //区域增长聚类分割对象	< 点 ， 法 线 > 
+    pcl::RegionGrowing<pcl::PointXYZ, pcl::Normal> reg; 
+    pcl::search::KdTree<POINTTYPE>::Ptr tree(new pcl::search::KdTree<POINTTYPE>);
+    reg.setMinClusterSize (50);	//最小的聚类的点数
+    reg.setMaxClusterSize (1000000);//最大的聚类的点数
+    reg.setSearchMethod (tree);	//搜索方式
+    reg.setNumberOfNeighbours (30); //设置搜索的邻域点的个数
+    reg.setInputCloud (cloud_input);	//输入点
+    //reg.setIndices (indices); 
+    reg.setInputNormals (cloud_normals);	//输入的法线
+    reg.setSmoothnessThreshold (3.0 / 180.0 * M_PI);//设置平滑度 法线差值阈值
+    reg.setCurvatureThreshold (1.0);	//设置曲率的阀值
+
+        // 获取聚类结果
+    std::vector<pcl::PointIndices> clusters;
+    reg.extract(clusters);
+
+    // 遍历和处理每个聚类
+    int j = 0;    
+    int m = 0;
+    for (const auto& cluster : clusters) {
+        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_cluster(new pcl::PointCloud<pcl::PointXYZ>);
+
+        for (const auto& idx : cluster.indices){
+            cloud_cluster->points.push_back(cloud_input->points[idx]); // 添加点到当前簇
+        }
+            
+        cloud_cluster->width = cloud_cluster->points.size();
+        cloud_cluster->height = 1;
+        cloud_cluster->is_dense = true;
+
+        if (cloud_cluster->size()>40)
+        {
+            m++;
+            // 可视化相关的代码
+            R = rand() % (256) + 0;
+            G = rand() % (256) + 0;
+            B = rand() % (256) + 0;
+            cout<<"cloud_cluster->size()="<<cloud_cluster->size()<<endl;
+            pcl::PointCloud<PointRGB>::Ptr cloud_cluster_vis(new pcl::PointCloud<PointRGB>);
+            for(std::size_t k=0; k<cloud_cluster->size(); k++ )
+            {
+                PointRGB thispoint;
+                thispoint.x=cloud_cluster->points[k].x;
+                thispoint.y=cloud_cluster->points[k].y;
+                thispoint.z=cloud_cluster->points[k].z;
+                thispoint.r=R;
+                thispoint.g=G;
+                thispoint.b=B;
+                cloud_cluster_vis->push_back(thispoint);
+                cloud_all->push_back(thispoint);
+            }
+            output_plane(cloud_cluster_vis,m);
+        }
+    }     
+}
+
+
+auto Segment::Plane_fitting_cluster_eu(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)->void
 {
 
     // 创建KdTree对象
@@ -261,7 +355,7 @@ void Segment::Plane_fitting_cluster_eu(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud
 
 }
 
-void Segment::Plane_fitting_normal(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)
+auto Segment::Plane_fitting_normal(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)->void
 {
     // pointcloud_size<POINTTYPE>(cloud);
 
@@ -385,7 +479,7 @@ void Segment::Plane_fitting_normal(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_inp
 
 }
 
-void Segment::Plane_fitting(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)
+auto Segment::Plane_fitting(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)->void
 {
 
     pcl::ModelCoefficients::Ptr coefficients(new pcl::ModelCoefficients);
@@ -445,7 +539,7 @@ void Segment::Plane_fitting(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)
 
 }
 
-void Segment::output_plane(pcl::PointCloud<PointRGB>::Ptr cloud_plane,int begin)
+auto Segment::output_plane(pcl::PointCloud<PointRGB>::Ptr cloud_plane,int begin)->void
 {
     std::stringstream ss;
     ss << "plane_" << begin<< ".pcd";
