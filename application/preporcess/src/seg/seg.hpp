@@ -43,22 +43,22 @@ public:
     // POINTCLOUD::Ptr cloud(new POINTCLOUD);
     // POINTCLOUD::Ptr cloud_inner(new POINTCLOUD);
     // POINTCLOUD::Ptr cloud_outer(new POINTCLOUD);
-    virtual auto clac_normal(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)->pcl::PointCloud<pcl::Normal>::Ptr;
+    virtual auto clac_normal(pcl::PointCloud<POINTTYPE>::Ptr cloud_input)->pcl::PointCloud<pcl::Normal>::Ptr;
 
-    virtual auto Plane_fitting(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)->void;
-    virtual auto Plane_fitting_normal(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)->void;
-    virtual auto Plane_fitting_cluster_eu(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)->void;
-    virtual auto Plane_fitting_cluster_growth(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)->void;
-    virtual auto Plane_fitting_cluster_growth_v(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)->void;
+    virtual auto Plane_fitting(pcl::PointCloud<POINTTYPE>::Ptr cloud_input)->void;
+    virtual auto Plane_fitting_normal(pcl::PointCloud<POINTTYPE>::Ptr cloud_input)->void;
+    virtual auto Plane_fitting_cluster_eu(pcl::PointCloud<POINTTYPE>::Ptr cloud_input)->void;
+    virtual auto Plane_fitting_cluster_growth(pcl::PointCloud<POINTTYPE>::Ptr cloud_input)->void;
+    virtual auto Plane_fitting_cluster_growth_v(pcl::PointCloud<POINTTYPE>::Ptr cloud_input)->void;
     // template <typename PointTy>
     // cv::Mat projection(typename pcl::PointCloud<PointTy>::Ptr cloud);
     virtual auto projection(POINTCLOUD::Ptr cloud)->cv::Mat ;
     // cv::Mat projection(pcl::PointCloud<PointTy>::Ptr cloud);
-    virtual auto normal_viz(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_input)->void;
+    virtual auto normal_viz(pcl::PointCloud<POINTTYPE>::Ptr cloud_input)->void;
     
     virtual auto backprojection(POINTCLOUD::Ptr cloud)->void;
     virtual auto output_plane(pcl::PointCloud<PointRGB>::Ptr cloud_plane,int begin)->void;
-    virtual auto cloudPassThrough(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,const char *axis,int min,int max)->void;
+    virtual auto cloudPassThrough(pcl::PointCloud<POINTTYPE>::Ptr cloud,const char *axis,int min,int max)->void;
 };
 
 // #include "seg.tpp" 

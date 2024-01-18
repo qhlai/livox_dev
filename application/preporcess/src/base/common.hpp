@@ -11,7 +11,7 @@
 
 // extern loglevel_e loglevel;
 
-using POINTTYPE = pcl::PointXYZ;
+using POINTTYPE = pcl::PointXYZI;
 using POINTNORMALTYPE = pcl::PointXYZINormal;
 using POINTCLOUD = pcl::PointCloud<POINTTYPE>;
 using PointRGB = pcl::PointXYZRGB;
@@ -36,7 +36,7 @@ namespace TypeDefs{
     using Matrix4Type                   = Eigen::Matrix<precision_t,4,4>;
     using Matrix6Type                   = Eigen::Matrix<precision_t,6,6>;
     using TransformType                 = Eigen::Isometry3d;//Matrix4Type;
-    
+
     using TransformTypeList             = std::list<TransformType,Eigen::aligned_allocator<TransformType>>;
     using Vector2Vector                 = std::vector<Vector2Type,Eigen::aligned_allocator<Vector2Type>>;
     using Vector3Vector                 = std::vector<Vector3Type,Eigen::aligned_allocator<Vector3Type>>;
