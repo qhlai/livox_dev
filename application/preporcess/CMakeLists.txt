@@ -215,3 +215,40 @@ target_include_directories(test PRIVATE
   ${PROJECT_SOURCE_DIR}/src/libs/dbg-macro
   ${POINTCLOUD_SEG_INC_FILES}
 )
+
+
+
+add_executable(supervoxel 
+src/supervoxel.cpp
+${POINTCLOUD_SEG_SRC_FILES}
+)
+target_link_libraries(supervoxel 
+  ${catkin_LIBRARIES} 
+  ${PCL_LIBRARIES} 
+  ${PYTHON_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+  # 
+)
+target_include_directories(supervoxel PRIVATE 
+  ${PYTHON_INCLUDE_DIRS} 
+  ${PROJECT_SOURCE_DIR}/src/libs/dbg-macro
+  ${POINTCLOUD_SEG_INC_FILES}
+)
+
+
+add_executable(supervoxeli 
+src/supervoxeli.cpp
+${POINTCLOUD_SEG_SRC_FILES}
+)
+target_link_libraries(supervoxeli 
+  ${catkin_LIBRARIES} 
+  ${PCL_LIBRARIES} 
+  ${PYTHON_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+  # 
+)
+target_include_directories(supervoxeli PRIVATE 
+  ${PYTHON_INCLUDE_DIRS} 
+  ${PROJECT_SOURCE_DIR}/src/libs/dbg-macro
+  ${POINTCLOUD_SEG_INC_FILES}
+)

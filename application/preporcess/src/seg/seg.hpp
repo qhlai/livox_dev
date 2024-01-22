@@ -35,6 +35,7 @@ public:
     uint8_t G;
     uint8_t B; 
 
+
     pcl::PointCloud<PointRGB>::Ptr cloud_all;
     // pcl::search::KdTree<POINTTYPE>::Ptr tree;
     // boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer(new pcl::visualization::PCLVisualizer("planar segment"));
@@ -59,6 +60,37 @@ public:
     virtual auto backprojection(POINTCLOUD::Ptr cloud)->void;
     virtual auto output_plane(pcl::PointCloud<PointRGB>::Ptr cloud_plane,int begin)->void;
     virtual auto cloudPassThrough(pcl::PointCloud<POINTTYPE>::Ptr cloud,const char *axis,int min,int max)->void;
+
+public:
+virtual auto addSupervoxelConnectionsToViewer (POINTTYPE &supervoxel_center,
+                                       POINTCLOUD &adjacent_supervoxel_centers,
+                                       std::string supervoxel_name,
+                                       pcl::visualization::PCLVisualizer::Ptr & viewer)->void;
+virtual auto get_cmd_parm()->void;
+
+public:
+
+
+    bool disable_transform = false;
+    bool voxel_res_specified = false;
+    float voxel_resolution = 0.008f;
+    float seed_resolution = 0.1f;
+    float color_importance = 0.2f;
+    float spatial_importance = 0.4f;
+    float normal_importance = 1.0f;
+    float normal_threshold = 0.8f;
+    float curvature_threshold = 0.8f;
+    // float min_cluster_size = 100;
+    // float max_cluster_size = 1000000;
+    // float cluster_tolerance = 0.1;
+    // float cluster_tolerance_eu = 0.1;
+    // float cluster_tolerance_growth = 0.1;
+    // float cluster_tolerance_growth_v = 0.1;
+    // float cluster_tolerance_normal = 0.1;
+    // float cluster_tolerance_normal_v = 0.1;
+    // float cluster_tolerance_normal_eu = 0.1;
+    // float cluster_tolerance_normal_eu = 0.1;
+
 };
 
 // #include "seg.tpp" 

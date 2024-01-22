@@ -19,17 +19,15 @@ int main(int argc, char** argv)
     std::string output_file = argv[2];
 #endif
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
-
-    if (pcl::io::loadPCDFile<pcl::PointXYZRGB>(input_file, *cloud) == -1)
+    pcl::PolygonMesh mesh;
+    // pcl::io::loadPLYFile(input_file, mesh);
+    if (pcl::io::loadPLYFile(input_file, mesh) == -1)
     {
         std::cout << "Failed to load PCD file: " << input_file << std::endl;
         return -1;
     }
-
-    pcl::PLYWriter ply_writer;
-    ply_writer.write(output_file, *cloud);
-
-    std::cout << "PCD to PLY conversion completed!" << std::endl;
-
+    pcl::fromPCLPointCloud2(mesh.cloud, *cloud);
+    pcl::io::savePCDFileBinary(output_file, *cloud);
+    std::cout << "PLY saved as PCD file!" << std::endl;
     return 0;
 }

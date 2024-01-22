@@ -17,6 +17,8 @@
 #include <opencv2/opencv.hpp>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
+
+#include <vtkPolyLine.h>
 // extern loglevel_e loglevel;
 
 
@@ -487,6 +489,62 @@ auto Segment::output_plane(pcl::PointCloud<PointRGB>::Ptr cloud_plane,int begin)
     pcl::visualization::PointCloudColorHandlerCustom<PointRGB> color(cloud_plane, R, G, B);
     viewer->addPointCloud<PointRGB>(cloud_plane, color, str);
     viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, str);
+}
+
+
+auto Segment::addSupervoxelConnectionsToViewer (POINTTYPE &supervoxel_center,
+                                       POINTCLOUD &adjacent_supervoxel_centers,
+                                       std::string supervoxel_name,
+                                       pcl::visualization::PCLVisualizer::Ptr & viewer)->void
+{
+
+  vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New ();
+
+  vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New ();
+
+  vtkSmartPointer<vtkPolyLine> polyLine = vtkSmartPointer<vtkPolyLine>::New ();
+
+
+  //Iterate through all adjacent points, and add a center point to adjacent point pair
+
+  for (auto adjacent_itr = adjacent_supervoxel_centers.begin (); adjacent_itr != adjacent_supervoxel_centers.end (); ++adjacent_itr)
+
+  {
+
+    points->InsertNextPoint (supervoxel_center.data);
+
+    points->InsertNextPoint (adjacent_itr->data);
+
+  }
+
+  // Create a polydata to store everything in
+
+  vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New ();
+
+  // Add the points to the dataset
+
+  polyData->SetPoints (points);
+
+  polyLine->GetPointIds  ()->SetNumberOfIds(points->GetNumberOfPoints ());
+
+  for(unsigned int i = 0; i < points->GetNumberOfPoints (); i++)
+
+    polyLine->GetPointIds ()->SetId (i,i);
+
+  cells->InsertNextCell (polyLine);
+
+  // Add the lines to the dataset
+
+  polyData->SetLines (cells);
+
+  viewer->addModelFromPolyData (polyData,supervoxel_name);
+
+}
+
+
+
+auto Segment::get_cmd_parm()->void {
+    
 }
 
 };
