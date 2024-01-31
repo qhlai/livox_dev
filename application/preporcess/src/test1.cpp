@@ -93,9 +93,9 @@ int main(int argc, char** argv)
 
     PointCloud_process1::Segment<pcl::PointXYZI> seg;
 
-    if(!seg.get_cmd_parm(argc, argv)){
-        return 1;
-    }
+    // if(!seg.get_cmd_parm(argc, argv)){
+    //     return 1;
+    // }
     
     // PointCloud_process::Segment seg;
     POINTCLOUD::Ptr cloud(new POINTCLOUD);
