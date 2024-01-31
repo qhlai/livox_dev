@@ -105,11 +105,8 @@ auto Segment::normal_viz(pcl::PointCloud<POINTTYPE>::Ptr cloud_input)->void
     pcl::search::KdTree<POINTTYPE>::Ptr tree(new pcl::search::KdTree<POINTTYPE>);
     viewer->addPointCloud<POINTTYPE>(cloud_input, "cloud");
 
-
     // 添加法线到可视化
     viewer->addPointCloudNormals<POINTTYPE, pcl::Normal>(cloud_input, cloud_normals, 10, 0.05, "normals");
-
-
 }
 
 auto Segment::Plane_fitting_cluster_growth(pcl::PointCloud<POINTTYPE>::Ptr cloud_input)->void

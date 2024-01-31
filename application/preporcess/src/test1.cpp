@@ -21,7 +21,7 @@
 #include <pcl/filters/passthrough.h>  //直通滤波器头文件
 
 #include "base/common.hpp"
-#include "seg/seg.hpp"
+#include "seg/seg1.hpp"
 // #include "seg/seg1.hpp"
 
 
@@ -91,8 +91,13 @@ int main(int argc, char** argv)
         output_file = argv[2];
     }
 
-    // PointCloud_process1::Segment<pcl::PointXYZINormal> seg1;
-    PointCloud_process::Segment seg;
+    PointCloud_process1::Segment<pcl::PointXYZI> seg;
+
+    if(!seg.get_cmd_parm(argc, argv)){
+        return 1;
+    }
+    
+    // PointCloud_process::Segment seg;
     POINTCLOUD::Ptr cloud(new POINTCLOUD);
     POINTCLOUD::Ptr cloud_inner(new POINTCLOUD);
     POINTCLOUD::Ptr cloud_outer(new POINTCLOUD);
@@ -104,7 +109,7 @@ int main(int argc, char** argv)
         return -1;
 
     }
-    
+    // pcl::io::loadPointCloud()
     seg.viewer->setWindowName("Plane Model Segmentation");
     seg.viewer->setBackgroundColor(0, 0, 0);
     //直通滤波

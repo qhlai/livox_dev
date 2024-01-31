@@ -158,7 +158,7 @@ ${PROJECT_SOURCE_DIR}/src/seg/*.cpp
 )
 
 file(GLOB_RECURSE POINTCLOUD_SEG_INC_FILES   
-${PROJECT_SOURCE_DIR}/src/seg/*.hpp
+${PROJECT_SOURCE_DIR}/src/seg/
 
 )
 
@@ -216,6 +216,23 @@ target_include_directories(test PRIVATE
   ${POINTCLOUD_SEG_INC_FILES}
 )
 
+
+add_executable(test1 
+src/test1.cpp
+${POINTCLOUD_SEG_SRC_FILES}
+)
+target_link_libraries(test1 
+  ${catkin_LIBRARIES} 
+  ${PCL_LIBRARIES} 
+  ${PYTHON_LIBRARIES}
+  ${OpenCV_LIBRARIES}
+  # 
+)
+target_include_directories(test1 PRIVATE 
+  ${PYTHON_INCLUDE_DIRS} 
+  ${PROJECT_SOURCE_DIR}/src/libs/dbg-macro
+  ${POINTCLOUD_SEG_INC_FILES}
+)
 
 
 add_executable(supervoxel 
