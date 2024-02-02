@@ -1,4 +1,4 @@
-# Install script for directory: /home/uestc/ros/mid360_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar_utc_sync
+# Install script for directory: /home/lqh/ros/pc_ws/src/pointcloud_dev/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/lidar_utc_sync
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

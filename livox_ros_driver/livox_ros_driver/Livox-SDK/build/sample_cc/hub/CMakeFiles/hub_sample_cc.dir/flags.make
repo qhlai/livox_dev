@@ -6,5 +6,5 @@ CXX_FLAGS =  -pthread   -std=gnu++11
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/uestc/ros/mid360_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sdk_core/include -I/home/uestc/ros/mid360_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sdk_core/include/third_party/FastCRC -I/home/uestc/ros/mid360_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sdk_core/include/third_party/spdlog -I/home/uestc/ros/mid360_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sdk_core/include/third_party/cmdline 
+CXX_INCLUDES = -I/home/lqh/ros/pc_ws/src/pointcloud_dev/livox_ros_driver/livox_ros_driver/Livox-SDK/sdk_core/include -I/home/lqh/ros/pc_ws/src/pointcloud_dev/livox_ros_driver/livox_ros_driver/Livox-SDK/sdk_core/include/third_party/FastCRC -I/home/lqh/ros/pc_ws/src/pointcloud_dev/livox_ros_driver/livox_ros_driver/Livox-SDK/sdk_core/include/third_party/spdlog -I/home/lqh/ros/pc_ws/src/pointcloud_dev/livox_ros_driver/livox_ros_driver/Livox-SDK/sdk_core/include/third_party/cmdline 
 

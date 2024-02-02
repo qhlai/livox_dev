@@ -18,7 +18,7 @@
 #include <opencv2/opencv.hpp>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
-
+#include <pcl/filters/statistical_outlier_removal.h>
 #include <vtkPolyLine.h>
 // extern loglevel_e loglevel;
 
@@ -95,7 +95,60 @@ namespace PointCloud_process1{
     // auto Segment<PointT>::backprojection(POINTCLOUD::Ptr cloud)->void {
 
     // }
+    template <typename PointT>
+    auto Segment<PointT>::load_pointcloud(std::string path)->void
+    {
 
+        if (pcl::io::loadPCDFile<PointT>(path, *cloud) == -1)
+        {
+            // log(logFATAL) << "Failed to load PCD file: " << input_file ;
+            // logit(logFATAL) << "Failed to load PCD file " ;
+            std::cout << "Failed to load PCD file " << std::endl;
+            // return -1;
+
+        }
+    }
+
+    template <typename PointT>
+    auto Segment<PointT>::save_pointcloud(std::string path)->void
+    {
+        
+        // std::cout << "PLY saved as PCD file!" << std::endl;
+        if (pcl::io::savePCDFileBinary(path, *cloud) == -1)
+        {
+            // log(logFATAL) << "Failed to load PCD file: " << input_file ;
+            // logit(logFATAL) << "Failed to load PCD file " ;
+            std::cout << "Failed to load PCD file " << std::endl;
+            // return -1;
+
+        }else{
+            std::cout << "saved" << std::endl;
+        
+        }
+    }
+
+    template <typename PointT>
+    auto Segment<PointT>::pointcloud_finetune()->void
+    {
+            //直通滤波
+        cloudPassThrough(cloud,"y",-20,20);
+        cloudPassThrough(cloud,"x",5,50);
+        cloudPassThrough(cloud,"z",-5,15);
+
+        pcl::StatisticalOutlierRemoval<PointT> sor;
+        sor.setInputCloud(cloud);
+
+        // Set the number of neighboring points to analyze for each point
+        sor.setMeanK(50);
+        // Set the standard deviation multiplier threshold
+        sor.setStddevMulThresh(1.0);
+
+        // Create an empty container for the filtered points
+        typename PointCloudT::Ptr cloud_filtered(new PointCloudT);
+
+        // Apply the filter
+        sor.filter(*cloud_filtered);
+    }
 //直通滤波器对点云进行处理
     template <typename PointT>
     auto Segment<PointT>::cloudPassThrough(typename PointCloudT::Ptr cloud,const char *axis,int min,int max)->void
@@ -572,5 +625,18 @@ namespace PointCloud_process1{
             if (pcl::console::find_switch (argc, argv, "-n"))
                 pcl::console::parse (argc, argv, "-n", normal_importance);
     }
+    template <typename PointT>
+    auto Segment<PointT>::init_display()->void {
+        viewer->setWindowName("Plane Model Segmentation");
+        viewer->setBackgroundColor(0, 0, 0);
+    }
 
+    template <typename PointT>
+    auto Segment<PointT>::display()->void {
+        while (!viewer->wasStopped())
+        {
+            viewer->spinOnce(100);
+            boost::this_thread::sleep(boost::posix_time::microseconds(100000));
+        }      
+    }
 };

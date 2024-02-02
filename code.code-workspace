@@ -93,7 +93,10 @@
 			"geometry": "cpp",
 			"ranges": "cpp",
 			"compare": "cpp",
-			"concepts": "cpp"
+			"concepts": "cpp",
+			"any": "cpp",
+			"forward_list": "cpp",
+			"filesystem": "cpp"
 		}
 	}
 }

@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/uestc/ros/mid360_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/trouble_shooting/main.cpp" "/home/uestc/ros/mid360_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sample_cc/trouble_shooting/CMakeFiles/trouble_shooting.dir/main.cpp.o"
+  "/home/lqh/ros/pc_ws/src/pointcloud_dev/livox_ros_driver/livox_ros_driver/Livox-SDK/sample_cc/trouble_shooting/main.cpp" "/home/lqh/ros/pc_ws/src/pointcloud_dev/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sample_cc/trouble_shooting/CMakeFiles/trouble_shooting.dir/main.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
@@ -18,7 +18,7 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
 
 # Targets to which this target links.
 set(CMAKE_TARGET_LINKED_INFO_FILES
-  "/home/uestc/ros/mid360_ws/src/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sdk_core/CMakeFiles/livox_sdk_static.dir/DependInfo.cmake"
+  "/home/lqh/ros/pc_ws/src/pointcloud_dev/livox_ros_driver/livox_ros_driver/Livox-SDK/build/sdk_core/CMakeFiles/livox_sdk_static.dir/DependInfo.cmake"
   )
 
 # Fortran module output directory.

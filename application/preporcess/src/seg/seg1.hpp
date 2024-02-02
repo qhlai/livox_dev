@@ -47,6 +47,24 @@ void pointcloud_size(typename pcl::PointCloud<PointT>::Ptr cloud) {
     std::cout << "PointCloud 的内存占用为: " << totalSize << " 字节. " <<cloud->width <<","<< cloud->height <<","<<sizeof(cloud->points[0])<< std::endl;
 }
 
+// pcl::PointCloud<pcl::PointXYZINormal>::Ptr pc_merge(pcl::PointCloud<pcl::PointXYZI>::Ptr& xyz_cloud, pcl::PointCloud<pcl::Normal>::Ptr& normals_cloud){
+//     pcl::PointCloud<pcl::PointXYZINormal>::Ptr combined_cloud(new pcl::PointCloud<pcl::PointXYZINormal>);
+//     // 设置 combined_cloud 的大小
+//     combined_cloud->resize(normals_cloud->size());
+
+//     // 将 normals_cloud 中的法线数据复制到 combined_cloud 中
+//     for (size_t i = 0; i < normals_cloud->size(); ++i) {
+//         combined_cloud->points[i].x = xyz_cloud->points[i].x;
+//         combined_cloud->points[i].y = xyz_cloud->points[i].y;
+//         combined_cloud->points[i].z = xyz_cloud->points[i].z;
+//         combined_cloud->points[i].intensity = xyz_cloud->points[i].intensity;
+//         combined_cloud->points[i].normal_x = normals_cloud->points[i].normal_x;
+//         combined_cloud->points[i].normal_y = normals_cloud->points[i].normal_y;
+//         combined_cloud->points[i].normal_z = normals_cloud->points[i].normal_z;
+//     }
+//     return combined_cloud;
+
+// }
 
 template <typename PointT>
 class Segment{
@@ -79,7 +97,9 @@ public:
 
     // template <typename PointT>
     virtual auto clac_normal(typename PointCloudT::Ptr cloud_input)->pcl::PointCloud<pcl::Normal>::Ptr;
-    
+    virtual auto load_pointcloud(std::string path)->void;
+    virtual auto save_pointcloud(std::string path)->void;
+    virtual auto pointcloud_finetune()->void;
     // virtual auto Plane_fitting(typename PointCloudT::Ptr cloud_input)->void;
     virtual auto Plane_fitting_normal(typename PointCloudT::Ptr cloud_input)->void;
     virtual auto Plane_fitting_cluster_eu(typename PointCloudT::Ptr cloud_input)->void;
@@ -96,6 +116,9 @@ public:
     virtual auto cloudPassThrough(typename PointCloudT::Ptr cloud,const char *axis,int min,int max)->void;
 
     virtual auto get_cmd_parm(int argc, char** argv)->bool;
+
+    virtual auto init_display()->void;
+    virtual auto display()->void;
 
     boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
 private:
