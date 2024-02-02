@@ -43,7 +43,6 @@
 
 
 
-FILE *fpWrite=fopen("cloud_all.txt","w");//a续写，w清除后写入
 
 
 // loglevel_e loglevel = logDEBUG4;
@@ -73,7 +72,7 @@ int main(int argc, char** argv)
                                     "-n <normal_weight>\n", argv[0]);
         return false;
     }
-    u8 pointcloud_type = 0;
+    int pointcloud_type = 0;
     pcl::console::parse (argc, argv, "-t", pointcloud_type);
     pcl::console::parse (argc, argv, "-i", input_file);
     pcl::console::parse (argc, argv, "-o", output_file);
@@ -82,8 +81,10 @@ int main(int argc, char** argv)
     // PointCloud_process1::Segment<pcl::PointXYZRGB> seg;
     // PointCloud_process1::Segment<pcl::PointXYZI> seg;
     // void* seg; // dirty code
-    if (pointcloud_type=0)
+    std::cout << "pointcloud_type: " << pointcloud_type << std::endl;
+    if (pointcloud_type==0)
     {
+        std::cout<<"PointCloud<pcl::PointXYZI> "<<std::endl;
         PointCloud_process1::Segment<pcl::PointXYZI> seg;
         seg.load_pointcloud(input_file);
         seg.pointcloud_finetune();
@@ -92,16 +93,12 @@ int main(int argc, char** argv)
         seg.init_display();
 
         seg.Plane_fitting_cluster_growth(seg.cloud);
-        
-        for(std::size_t i=0; i< seg.cloud_all->size(); i++)
-            fprintf(fpWrite,"%2.3f %2.3f %2.3f %d %d %d \n",seg.cloud_all->points[i].x,seg.cloud_all->points[i].y,seg.cloud_all->points[i].z,seg.cloud_all->points[i].r,seg.cloud_all->points[i].g,seg.cloud_all->points[i].b);
-        fclose(fpWrite);
-        cout << "cloud_all.txt 保存完毕！！！" << endl;
-
+    
         seg.display();
 
-    }else if (pointcloud_type=1)
+    }else if (pointcloud_type==1)
     {
+        std::cout << "PointCloud_process1::Segment<pcl::PointXYZRGB> seg;" << std::endl;
         PointCloud_process1::Segment<pcl::PointXYZRGB> seg;
         seg.load_pointcloud(input_file);
         seg.pointcloud_finetune();
@@ -110,11 +107,6 @@ int main(int argc, char** argv)
 
         seg.Plane_fitting_cluster_growth(seg.cloud);
         
-        for(std::size_t i=0; i< seg.cloud_all->size(); i++)
-            fprintf(fpWrite,"%2.3f %2.3f %2.3f %d %d %d \n",seg.cloud_all->points[i].x,seg.cloud_all->points[i].y,seg.cloud_all->points[i].z,seg.cloud_all->points[i].r,seg.cloud_all->points[i].g,seg.cloud_all->points[i].b);
-        fclose(fpWrite);
-        cout << "cloud_all.txt 保存完毕！！！" << endl;
-
         seg.display();
     }
     

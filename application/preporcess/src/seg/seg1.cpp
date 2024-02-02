@@ -14,11 +14,20 @@
 #include <pcl/segmentation/extract_clusters.h>
 #include <pcl/segmentation/region_growing.h>
 #include <pcl/console/parse.h>
+#include <pcl/features/boundary.h>
+#include <pcl/common/centroid.h>
+#include <pcl/surface/mls.h> //最小二乘 重采样平滑
+#include <pcl/surface/poisson.h>  //泊松重建
+#include <pcl/geometry/polygon_mesh.h> //MESH
+#include <pcl/surface/gp3.h>  //贪心三角形
 
 #include <opencv2/opencv.hpp>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <pcl/filters/statistical_outlier_removal.h>
+
+// #include <pcl/io/polygon_mesh_io.h>
+
 #include <vtkPolyLine.h>
 // extern loglevel_e loglevel;
 
@@ -112,9 +121,15 @@ namespace PointCloud_process1{
     template <typename PointT>
     auto Segment<PointT>::save_pointcloud(std::string path)->void
     {
-        
+        // // FILE *fpWrite=fopen("cloud_all.txt","w");//a续写，w清除后写入
+        // FILE *fpWrite=fopen("/home/lqh/ros/pc_ws/src/pointcloud_dev/cloud_all.txt","w");//a续写，w清除后写入
+        // for(std::size_t i=0; i< seg.cloud_all->size(); i++)
+        //     fprintf(fpWrite,"%2.3f %2.3f %2.3f %d %d %d \n",seg.cloud_all->points[i].x,seg.cloud_all->points[i].y,seg.cloud_all->points[i].z,seg.cloud_all->points[i].r,seg.cloud_all->points[i].g,seg.cloud_all->points[i].b);
+        // fclose(fpWrite);
+        // cout << "cloud_all.txt 保存完毕！！！" << endl;
+
         // std::cout << "PLY saved as PCD file!" << std::endl;
-        if (pcl::io::savePCDFileBinary(path, *cloud) == -1)
+        if (pcl::io::savePCDFileBinary(path, *cloud_all) == -1)
         {
             // log(logFATAL) << "Failed to load PCD file: " << input_file ;
             // logit(logFATAL) << "Failed to load PCD file " ;
@@ -126,7 +141,66 @@ namespace PointCloud_process1{
         
         }
     }
+// //重采样平滑点云
+// void SmoothPointcloud(pcl::PointCloud<pcl::PointXYZRGB>::Ptr & cloud_in, pcl::PointCloud<pcl::PointXYZRGB>::Ptr & cloud_out)
+// {
+// 	// 对点云重采样 
+// 	std::cout<<"begin smooth: size " << cloud_in->size() << std::endl;
+// 	pcl::search::KdTree<pcl::PointXYZRGB>::Ptr treeSampling(new pcl::search::KdTree<pcl::PointXYZRGB>); // 创建用于最近邻搜索的KD-Tree
+// 	pcl::MovingLeastSquares<pcl::PointXYZRGB, pcl::PointXYZRGB> mls;  // 定义最小二乘实现的对象mls
+// 	mls.setSearchMethod(treeSampling);    // 设置KD-Tree作为搜索方法
+// 	mls.setComputeNormals(false);  //设置在最小二乘计算中是否需要存储计算的法线
+// 	mls.setInputCloud(cloud_in);        //设置待处理点云
+// 	mls.setPolynomialOrder(2);             // 拟合2阶多项式拟合
+// 	mls.setPolynomialFit(false);  // 设置为false可以 加速 smooth
+// 	mls.setSearchRadius(0.05); // 单位m.设置用于拟合的K近邻半径
+// 	mls.process(*cloud_out);        //输出
+// 	std::cout << "success smooth, size: " << cloud_out->size() << std::endl;
 
+// }
+
+// //贪心三角化算法得到Mesh
+// pcl::PolygonMesh greedy_traingle_GenerateMesh(pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_in, pcl::PointCloud<pcl::Normal>::Ptr normals)
+// {	
+// 	pcl::StopWatch time;
+
+// 	std::cout << "begin  mesh..." << std::endl;
+
+// 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_out(new pcl::PointCloud<pcl::PointXYZRGB>());
+	
+// 	SmoothPointcloud(cloud_in, cloud_out);
+// 	EraseInvalidPoints(cloud_out);
+
+// 	// 将点云位姿、颜色、法线信息连接到一起
+// 	pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr cloud_with_normals(new pcl::PointCloud<pcl::PointXYZRGBNormal>);
+// 	pcl::concatenateFields(*cloud_in, *normals, *cloud_with_normals);
+
+// 	//定义搜索树对象
+// 	pcl::search::KdTree<pcl::PointXYZRGBNormal>::Ptr tree2(new pcl::search::KdTree<pcl::PointXYZRGBNormal>);
+// 	tree2->setInputCloud(cloud_with_normals);
+
+// 	// 三角化
+// 	pcl::GreedyProjectionTriangulation<pcl::PointXYZRGBNormal> gp3;   // 定义三角化对象
+// 	pcl::PolygonMesh triangles; //存储最终三角化的网络模型
+
+// 	// 设置三角化参数
+// 	gp3.setSearchRadius(0.1);  //设置搜索时的半径，也就是KNN的球半径
+// 	gp3.setMu(2.5);  //设置样本点搜索其近邻点的最远距离为2.5倍（典型值2.5-3），这样使得算法自适应点云密度的变化
+// 	gp3.setMaximumNearestNeighbors(100);    //设置样本点最多可搜索的邻域个数，典型值是50-100
+
+// 	gp3.setMinimumAngle(M_PI / 18); // 设置三角化后得到的三角形内角的最小的角度为10°
+// 	gp3.setMaximumAngle(2 * M_PI / 3); // 设置三角化后得到的三角形内角的最大角度为120°
+
+// 	gp3.setMaximumSurfaceAngle(M_PI / 4); // 设置某点法线方向偏离样本点法线的最大角度45°，如果超过，连接时不考虑该点
+// 	gp3.setNormalConsistency(false);  //设置该参数为true保证法线朝向一致，设置为false的话不会进行法线一致性检查
+
+// 	gp3.setInputCloud(cloud_with_normals);     //设置输入点云为有向点云
+// 	gp3.setSearchMethod(tree2);   //设置搜索方式
+// 	gp3.reconstruct(triangles);  //重建提取三角化
+// 	cloud_with_normals->width = cloud_with_normals->height = 0;
+// 	std::cout << "success traingles, time(s) "<< time.getTimeSeconds() << std::endl;
+// 	return triangles;
+// }
     template <typename PointT>
     auto Segment<PointT>::pointcloud_finetune()->void
     {
@@ -139,7 +213,7 @@ namespace PointCloud_process1{
         sor.setInputCloud(cloud);
 
         // Set the number of neighboring points to analyze for each point
-        sor.setMeanK(50);
+        sor.setMeanK(80);
         // Set the standard deviation multiplier threshold
         sor.setStddevMulThresh(1.0);
 
@@ -223,7 +297,7 @@ namespace PointCloud_process1{
             cloud_cluster->height = 1;
             cloud_cluster->is_dense = true;
 
-            if (cloud_cluster->size()>40)
+            if (cloud_cluster->size()>80)
             {
                 m++;
                 // 可视化相关的代码
@@ -231,6 +305,11 @@ namespace PointCloud_process1{
                 G = rand() % (256) + 0;
                 B = rand() % (256) + 0;
                 cout<<"cloud_cluster->size()="<<cloud_cluster->size()<<endl;
+
+                Eigen::Vector4f centroid;
+                pcl::compute3DCentroid(*cloud, centroid);
+                std::cout << "Centroid: (" << centroid[0] << ", " << centroid[1] << ", " << centroid[2] << ")" << std::endl;
+
                 pcl::PointCloud<PointRGB>::Ptr cloud_cluster_vis(new pcl::PointCloud<PointRGB>);
                 for(std::size_t k=0; k<cloud_cluster->size(); k++ )
                 {
@@ -377,6 +456,26 @@ namespace PointCloud_process1{
 
 
     }
+    template <typename PointT>
+    auto Segment<PointT>::point2mesh(typename PointCloudT::Ptr cloud,pcl::Normal normals)->pcl::PolygonMesh::Ptr
+    {
+        pcl::GreedyProjectionTriangulation<pcl::PointXYZRGBNormal> gp3;
+        pcl::PolygonMesh::Ptr mesh(new pcl::PolygonMesh);
+        // typename pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>);
+        // tree->setInputCloud(cloud);
+        // gp3.setSearchRadius(0.025);
+        // gp3.setMu(2.5);
+        // gp3.setMaximumNearestNeighbors(100);
+        // gp3.setMaximumSurfaceAngle(M_PI / 4);
+        // gp3.setMinimumAngle(M_PI / 18);
+        // gp3.setMaximumAngle(2 * M_PI / 3);
+        // gp3.setNormalConsistency(false);
+        // gp3.setInputCloud(cloud);
+        // gp3.setInputNormals(normals);
+        // gp3.setSearchMethod(tree);
+        // gp3.reconstruct(*mesh);
+        return mesh;
+    }    
     template <typename PointT>
     auto Segment<PointT>::Plane_fitting_normal(typename PointCloudT::Ptr cloud_input)->void
     {
@@ -552,6 +651,17 @@ namespace PointCloud_process1{
         viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 1, str);
     }
 
+    template <typename PointT>
+    auto Segment<PointT>::output_plane(pcl::PolygonMesh::Ptr cloud_plane,int begin)->void
+    {
+
+        viewer->addPolygonMesh(*cloud_plane, "mesh");
+
+        // 设置Mesh的渲染属性
+        viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_SHADING, pcl::visualization::PCL_VISUALIZER_SHADING_FLAT, "mesh");
+        viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 0.8, 0.8, 0.8, "mesh");
+        // viewer.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_OPACITY, 0.3, "mesh");
+    }
     // template <typename PointT>
     // auto Segment<PointT>::addSupervoxelConnectionsToViewer (PointT &supervoxel_center,
     //                                     POINTCLOUD &adjacent_supervoxel_centers,

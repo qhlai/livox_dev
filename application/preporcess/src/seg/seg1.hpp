@@ -113,6 +113,8 @@ public:
     
     // virtual auto backprojection(POINTCLOUD::Ptr cloud)->void;
     virtual auto output_plane(pcl::PointCloud<PointRGB>::Ptr cloud_plane,int begin)->void;
+    virtual auto output_plane(pcl::PolygonMesh::Ptr cloud_plane,int begin)->void;
+    virtual auto point2mesh(typename PointCloudT::Ptr cloud_input,pcl::Normal normal)->pcl::PolygonMesh::Ptr;
     virtual auto cloudPassThrough(typename PointCloudT::Ptr cloud,const char *axis,int min,int max)->void;
 
     virtual auto get_cmd_parm(int argc, char** argv)->bool;
@@ -121,6 +123,7 @@ public:
     virtual auto display()->void;
 
     boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
+    
 private:
     uint8_t R;
     uint8_t G;
