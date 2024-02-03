@@ -116,11 +116,11 @@ public:
     virtual auto output_plane(pcl::PolygonMesh::Ptr cloud_plane,int begin)->void;
     virtual auto point2mesh(typename PointCloudT::Ptr cloud_input,pcl::Normal normal)->pcl::PolygonMesh::Ptr;
     virtual auto cloudPassThrough(typename PointCloudT::Ptr cloud,const char *axis,int min,int max)->void;
-    virtual auto SmoothPointcloud()->void;
+    virtual auto SmoothPointcloud()->typename PointCloudT::Ptr;
     virtual auto greedy_traingle_GenerateMesh(typename PointCloudT::Ptr cloud_in,pcl::PointCloud<pcl::Normal>::Ptr normals)->pcl::PolygonMesh::Ptr;
 
     virtual auto poisson_reconstruction_GenerateMesh(typename PointCloudT::Ptr cloud_in,pcl::PointCloud<pcl::Normal>::Ptr normals)->pcl::PolygonMesh::Ptr;
-    
+
     virtual auto get_cmd_parm(int argc, char** argv)->bool;
 
     virtual auto init_display()->void;

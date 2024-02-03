@@ -145,7 +145,7 @@ namespace PointCloud_process1{
 
 
 template <typename PointT>
-auto Segment<PointT>::SmoothPointcloud()->void
+auto Segment<PointT>::SmoothPointcloud()->typename PointCloudT::Ptr
 {
     // pcl::PointCloud<PointT> mls_points;   //输出MLS
     // can't use it , TODO: fix it
@@ -161,9 +161,10 @@ auto Segment<PointT>::SmoothPointcloud()->void
 	mls.setPolynomialOrder(2);             // 拟合2阶多项式拟合
 	mls.setPolynomialFit(false);  // 设置为false可以 加速 smooth
 	mls.setSearchRadius(0.03); // 单位m.设置用于拟合的K近邻半径
-	mls.process(*cloud);        //输出
-	std::cout << "success smooth, size: " << cloud->size() << std::endl;
-
+    typename PointCloudT::Ptr smooth_point(new pcl::PointCloud<PointT>());
+	mls.process(*smooth_point);        //输出
+	std::cout << "success smooth, size: " << smooth_point->size() << std::endl;
+    cloud=smooth_point;
 
 
 
@@ -231,21 +232,13 @@ auto Segment<pcl::PointXYZRGB>::greedy_traingle_GenerateMesh(typename PointCloud
 template <>
 auto Segment<pcl::PointXYZI>::greedy_traingle_GenerateMesh(typename PointCloudT::Ptr cloud_in, pcl::PointCloud<pcl::Normal>::Ptr normals)->pcl::PolygonMesh::Ptr 
 {	
-	// pcl::StopWatch time;
-
-	std::cout << "begin  mesh..." << std::endl;
-
-	// typename PointCloudT::Ptr cloud_out(new pcl::PointCloud<PointT>());
-	
-	// SmoothPointcloud(cloud_in, cloud_out);
-	// EraseInvalidPoints(cloud_out);
     // 删除无效点
     // std::vector<int> indices;
     // pcl::removeNaNFromPointCloud(*cloud_in, *cloud_in, indices);
 	// 将点云位姿、颜色、法线信息连接到一起
 	pcl::PointCloud<pcl::PointXYZINormal>::Ptr cloud_with_normals(new pcl::PointCloud<pcl::PointXYZINormal>);
 	pcl::concatenateFields(*cloud_in, *normals, *cloud_with_normals);
-
+    pcl::PolygonMesh::Ptr mesh(new pcl::PolygonMesh);
 	//定义搜索树对象
     typename pcl::search::KdTree<pcl::PointXYZINormal>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZINormal>);
     tree->setInputCloud(cloud_with_normals);
@@ -253,26 +246,26 @@ auto Segment<pcl::PointXYZI>::greedy_traingle_GenerateMesh(typename PointCloudT:
 	// 三角化
 	pcl::GreedyProjectionTriangulation<pcl::PointXYZINormal> gp3;   // 定义三角化对象
 	// pcl::PolygonMesh triangles; //存储最终三角化的网络模型
-    pcl::PolygonMesh::Ptr triangles(new pcl::PolygonMesh);
+    
 
 	// 设置三角化参数
 	gp3.setSearchRadius(0.3);  //设置搜索时的半径，也就是KNN的球半径
 	gp3.setMu(2.5);  //设置样本点搜索其近邻点的最远距离为2.5倍（典型值2.5-3），这样使得算法自适应点云密度的变化
 	gp3.setMaximumNearestNeighbors(100);    //设置样本点最多可搜索的邻域个数，典型值是50-100
 
-	gp3.setMinimumAngle(M_PI / 18); // 设置三角化后得到的三角形内角的最小的角度为10°
+	gp3.setMinimumAngle(M_PI / 18/2); // 设置三角化后得到的三角形内角的最小的角度为10°
 	gp3.setMaximumAngle(2 * M_PI / 3); // 设置三角化后得到的三角形内角的最大角度为120°
 
-	gp3.setMaximumSurfaceAngle(M_PI / 4); // 设置某点法线方向偏离样本点法线的最大角度45°，如果超过，连接时不考虑该点
-	gp3.setNormalConsistency(false);  //设置该参数为true保证法线朝向一致，设置为false的话不会进行法线一致性检查
+	gp3.setMaximumSurfaceAngle(M_PI / 18); // 设置某点法线方向偏离样本点法线的最大角度45°，如果超过，连接时不考虑该点
+	gp3.setNormalConsistency(true);  //设置该参数为true保证法线朝向一致，设置为false的话不会进行法线一致性检查
 
 	gp3.setInputCloud(cloud_with_normals);     //设置输入点云为有向点云
 	gp3.setSearchMethod(tree);   //设置搜索方式
     // gp3.setInputNormals(normals);
-	gp3.reconstruct(*triangles);  //重建提取三角化
+	gp3.reconstruct(*mesh);  //重建提取三角化
 	// cloud_with_normals->width = cloud_with_normals->height = 0;
 	// std::cout << "success traingles, time(s) "<< time.getTimeSeconds() << std::endl;
-	return triangles;
+	return mesh;
 }
 template <typename PointT>
 auto Segment<PointT>::greedy_traingle_GenerateMesh(typename PointCloudT::Ptr cloud_in, pcl::PointCloud<pcl::Normal>::Ptr normals)->pcl::PolygonMesh::Ptr
@@ -297,11 +290,13 @@ auto Segment<pcl::PointXYZRGB>::poisson_reconstruction_GenerateMesh(typename Poi
 
     pcl::Poisson<pcl::PointXYZRGBNormal> poisson;
     //poisson.setDegree(2);
-    poisson.setDepth(8);
-    poisson.setSolverDivide (6);
-    poisson.setIsoDivide (6);
+    // poisson.setDepth(8);
+    // poisson.setSolverDivide (6);
+    // poisson.setIsoDivide (6);
 
-    poisson.setConfidence(false); 
+    // poisson.setConfidence(false); 
+    poisson.setConfidence(true);
+    // poisson.confidence = false;
     poisson.setManifold(false); 
     poisson.setOutputPolygons(false); 
 
@@ -318,6 +313,22 @@ auto Segment<pcl::PointXYZI>::poisson_reconstruction_GenerateMesh(typename Point
 	// 将点云位姿、颜色、法线信息连接到一起
 	pcl::PointCloud<pcl::PointXYZINormal>::Ptr cloud_with_normals(new pcl::PointCloud<pcl::PointXYZINormal>);
 	pcl::concatenateFields(*cloud_in, *normals, *cloud_with_normals);
+    pcl::PointCloud<pcl::PointXYZINormal>::Ptr cloud_smooth(new pcl::PointCloud<pcl::PointXYZINormal>);
+
+// {
+//     pcl::search::KdTree<pcl::PointXYZINormal>::Ptr tree(new pcl::search::KdTree<pcl::PointXYZINormal>);
+//     tree->setInputCloud(cloud_with_normals);
+
+// 	pcl::MovingLeastSquares<pcl::PointXYZINormal, pcl::PointXYZINormal> mls;  // 定义最小二乘实现的对象mls
+// 	mls.setSearchMethod(tree);    // 设置KD-Tree作为搜索方法
+// 	mls.setComputeNormals(false);  //设置在最小二乘计算中是否需要存储计算的法线
+// 	mls.setInputCloud(cloud_with_normals);        //设置待处理点云
+// 	mls.setPolynomialOrder(2);             // 拟合2阶多项式拟合
+// 	mls.setPolynomialFit(false);  // 设置为false可以 加速 smooth
+// 	mls.setSearchRadius(0.03); // 单位m.设置用于拟合的K近邻半径
+// 	mls.process(*cloud_smooth);        //输出
+// }
+//     cloud_with_normals=cloud_smooth;
 	pcl::PolygonMesh::Ptr mesh(new pcl::PolygonMesh); //存储最终三角化的网络模型
     pcl::Poisson<pcl::PointXYZINormal> poisson;
     //poisson.setDegree(2);
@@ -338,8 +349,8 @@ template <typename PointT>
 auto Segment<PointT>::poisson_reconstruction_GenerateMesh(typename PointCloudT::Ptr cloud_in, pcl::PointCloud<pcl::Normal>::Ptr normals)->pcl::PolygonMesh::Ptr
 {	
 	std::cout << "not implement yet" << std::endl;
-	pcl::PolygonMesh::Ptr (new pcl::PolygonMesh);
-	return triangles;
+	pcl::PolygonMesh::Ptr mesh(new pcl::PolygonMesh);
+	return mesh;
 }
 
     template <typename PointT>
@@ -357,7 +368,6 @@ auto Segment<PointT>::poisson_reconstruction_GenerateMesh(typename PointCloudT::
         cloudPassThrough(cloud,"y",-20,20);
         cloudPassThrough(cloud,"x",5,50);
         cloudPassThrough(cloud,"z",-5,15);
-
 
         // SmoothPointcloud(); // have bug here
 
@@ -494,7 +504,10 @@ auto Segment<PointT>::poisson_reconstruction_GenerateMesh(typename PointCloudT::
 #else   
                 std::cout << "cloud_cluster->size()=" << cloud_cluster->size() << std::endl;
                 std::cout << "cloud_normals_cluster->size()=" << cloud_normals_cluster->size() << std::endl;
-                pcl::PolygonMesh::Ptr mesh =greedy_traingle_GenerateMesh(cloud_cluster,cloud_normals_cluster);
+                // 表面粗糙
+                // pcl::PolygonMesh::Ptr mesh =greedy_traingle_GenerateMesh(cloud_cluster,cloud_normals_cluster);
+                // 对封闭的平面的处理效果更好
+                pcl::PolygonMesh::Ptr mesh =poisson_reconstruction_GenerateMesh(cloud_cluster,cloud_normals_cluster);
                 output_plane(mesh,m);
 #endif
             }
