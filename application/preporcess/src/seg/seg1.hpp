@@ -73,7 +73,16 @@ public:
     using PointCloudT = pcl::PointCloud<PointT>;
     using NormalCloudT = pcl::PointCloud<pcl::Normal>;
     using SearchKdtreeT = pcl::search::KdTree<PointT>;
+    // using PointSVT = pcl::PointXYZRGBA;
+    using PointLT = pcl::PointXYZL;
+    // using PointCloudSVT = pcl::PointCloud<PointSVT>;
+    using PointNT =pcl::PointNormal;
+    using  PointNCloudT =pcl::PointCloud<PointNT>;
+    // using PointT = PointT;
+    // typedef pcl::PointNormal PointNT;
 
+    // typedef pcl::PointCloud<PointNT> PointNCloudT;
+    // typename PointCloudSVT::Ptr cloud_sv;
     typename PointCloudT::Ptr cloud;
     typename PointCloudT::Ptr cloud_inner;
     typename PointCloudT::Ptr cloud_outer;
@@ -109,7 +118,7 @@ public:
     virtual auto Cluster_super_voxel(typename PointCloudT::Ptr cloud_input)->void;
 
     virtual auto addSupervoxelConnectionsToViewer (PointT &supervoxel_center,
-                                  typename PointCloudT &adjacent_supervoxel_centers,
+                                  PointCloudT &adjacent_supervoxel_centers,
                                   std::string supervoxel_name,
                                   pcl::visualization::PCLVisualizer::Ptr & viewer)->void;
 
