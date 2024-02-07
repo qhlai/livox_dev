@@ -105,6 +105,14 @@ public:
     virtual auto Plane_fitting_cluster_eu(typename PointCloudT::Ptr cloud_input)->void;
     virtual auto Plane_fitting_cluster_growth(typename PointCloudT::Ptr cloud_input)->void;
     virtual auto Plane_fitting_cluster_growth_v(typename PointCloudT::Ptr cloud_input)->void;
+
+    virtual auto Cluster_super_voxel(typename PointCloudT::Ptr cloud_input)->void;
+
+    virtual auto addSupervoxelConnectionsToViewer (PointT &supervoxel_center,
+                                  typename PointCloudT &adjacent_supervoxel_centers,
+                                  std::string supervoxel_name,
+                                  pcl::visualization::PCLVisualizer::Ptr & viewer)->void;
+
     // // template <typename PointTy>
     // cv::Mat projection(typename pcl::PointCloud<PointTy>::Ptr cloud);
     // virtual auto projection(POINTCLOUD::Ptr cloud)->cv::Mat ;
@@ -136,7 +144,7 @@ private:
     // virtual auto get_cmd_parm()->void;
 public:
 
-
+    int display_type = 0;
     bool disable_transform = false;
     bool voxel_res_specified = false;
     u32 normal_min = 100;

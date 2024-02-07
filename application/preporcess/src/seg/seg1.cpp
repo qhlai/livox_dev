@@ -20,6 +20,12 @@
 #include <pcl/surface/poisson.h>  //泊松重建
 #include <pcl/geometry/polygon_mesh.h> //MESH
 #include <pcl/surface/gp3.h>  //贪心三角形
+#include <pcl/segmentation/supervoxel_clustering.h>
+
+
+//VTK include needed for drawing graph lines
+
+#include <vtkPolyLine.h>
 
 #include <opencv2/opencv.hpp>
 #include <Eigen/Core>
@@ -482,36 +488,133 @@ auto Segment<PointT>::poisson_reconstruction_GenerateMesh(typename PointCloudT::
                 Eigen::Vector4f centroid;
                 pcl::compute3DCentroid(*cloud, centroid);
                 std::cout << "Centroid: (" << centroid[0] << ", " << centroid[1] << ", " << centroid[2] << ")" << std::endl;
-#if 0
-                // 可视化相关的代码
-                R = rand() % (256) + 0;
-                G = rand() % (256) + 0;
-                B = rand() % (256) + 0;
-                pcl::PointCloud<PointRGB>::Ptr cloud_cluster_vis(new pcl::PointCloud<PointRGB>);
-                for(std::size_t k=0; k<cloud_cluster->size(); k++ )
-                {
-                    PointRGB thispoint;
-                    thispoint.x=cloud_cluster->points[k].x;
-                    thispoint.y=cloud_cluster->points[k].y;
-                    thispoint.z=cloud_cluster->points[k].z;
-                    thispoint.r=R;
-                    thispoint.g=G;
-                    thispoint.b=B;
-                    cloud_cluster_vis->push_back(thispoint);
-                    cloud_all->push_back(thispoint);
+                if(display_type==0){
+                    // 可视化相关的代码
+                    R = rand() % (256) + 0;
+                    G = rand() % (256) + 0;
+                    B = rand() % (256) + 0;
+                    pcl::PointCloud<PointRGB>::Ptr cloud_cluster_vis(new pcl::PointCloud<PointRGB>);
+                    for(std::size_t k=0; k<cloud_cluster->size(); k++ )
+                    {
+                        PointRGB thispoint;
+                        thispoint.x=cloud_cluster->points[k].x;
+                        thispoint.y=cloud_cluster->points[k].y;
+                        thispoint.z=cloud_cluster->points[k].z;
+                        thispoint.r=R;
+                        thispoint.g=G;
+                        thispoint.b=B;
+                        cloud_cluster_vis->push_back(thispoint);
+                        cloud_all->push_back(thispoint);
+                    }
+                    output_plane(cloud_cluster_vis,m);
                 }
-                output_plane(cloud_cluster_vis,m);
-#else   
-                std::cout << "cloud_cluster->size()=" << cloud_cluster->size() << std::endl;
-                std::cout << "cloud_normals_cluster->size()=" << cloud_normals_cluster->size() << std::endl;
-                // 表面粗糙
-                // pcl::PolygonMesh::Ptr mesh =greedy_traingle_GenerateMesh(cloud_cluster,cloud_normals_cluster);
-                // 对封闭的平面的处理效果更好
-                pcl::PolygonMesh::Ptr mesh =poisson_reconstruction_GenerateMesh(cloud_cluster,cloud_normals_cluster);
-                output_plane(mesh,m);
-#endif
+                else if(display_type==1){
+                    std::cout << "cloud_cluster->size()=" << cloud_cluster->size() << std::endl;
+                    std::cout << "cloud_normals_cluster->size()=" << cloud_normals_cluster->size() << std::endl;
+                    // 表面粗糙
+                    pcl::PolygonMesh::Ptr mesh =greedy_traingle_GenerateMesh(cloud_cluster,cloud_normals_cluster);
+                    // 对封闭的平面的处理效果更好
+                    output_plane(mesh,m);
+                }
+                else if(display_type==2){
+                    std::cout << "cloud_cluster->size()=" << cloud_cluster->size() << std::endl;
+                    std::cout << "cloud_normals_cluster->size()=" << cloud_normals_cluster->size() << std::endl;
+                    // 表面粗糙
+                    // pcl::PolygonMesh::Ptr mesh =greedy_traingle_GenerateMesh(cloud_cluster,cloud_normals_cluster);
+                    // 对封闭的平面的处理效果更好
+                    pcl::PolygonMesh::Ptr mesh =poisson_reconstruction_GenerateMesh(cloud_cluster,cloud_normals_cluster);
+                    output_plane(mesh,m);
+                }
+
             }
         }     
+    }
+
+    template <typename PointT>
+    auto Segment<PointT>::Cluster_super_voxel(typename PointCloudT::Ptr cloud_input)->void
+    {
+
+        typename pcl::SupervoxelClustering<PointT> super (voxel_resolution, seed_resolution);
+        super.setInputCloud (cloud);
+        // super.setColorImportance (color_importance);
+        super.setSpatialImportance (spatial_importance);
+        super.setNormalImportance (normal_importance);
+        std::map <std::uint32_t, typename  pcl::Supervoxel<PointT>::Ptr > supervoxel_clusters;
+        pcl::console::print_highlight ("Extracting supervoxels!\n");
+        super.extract (supervoxel_clusters);
+        pcl::console::print_info ("Found %d supervoxels\n", supervoxel_clusters.size ());
+        typename PointCloudT::Ptr voxel_centroid_cloud = super.getVoxelCentroidCloud ();
+        viewer->addPointCloud (voxel_centroid_cloud, "voxel centroids");
+
+        viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE,2.0, "voxel centroids");
+
+        viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY,0.95, "voxel centroids");
+          typename PointLCloudT::Ptr labeled_voxel_cloud = super.getLabeledVoxelCloud ();
+
+        viewer->addPointCloud (labeled_voxel_cloud, "labeled voxels");
+
+        viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_OPACITY,0.8, "labeled voxels");
+
+
+        typename PointNCloudT::Ptr sv_normal_cloud = super.makeSupervoxelNormalCloud (supervoxel_clusters);
+
+        //We have this disabled so graph is easy to see, uncomment to see supervoxel normals
+
+        viewer->addPointCloudNormals<PointNT> (sv_normal_cloud,1,0.05f, "supervoxel_normals");
+
+
+        pcl::console::print_highlight ("Getting supervoxel adjacency\n");
+
+        std::multimap<std::uint32_t, std::uint32_t> supervoxel_adjacency;
+
+        super.getSupervoxelAdjacency (supervoxel_adjacency);
+
+        //To make a graph of the supervoxel adjacency, we need to iterate through the supervoxel adjacency multimap
+
+        for (auto label_itr = supervoxel_adjacency.cbegin (); label_itr != supervoxel_adjacency.cend (); )
+
+        {
+
+            //First get the label
+
+            std::uint32_t supervoxel_label = label_itr->first;
+
+            //Now get the supervoxel corresponding to the label
+
+            typename pcl::Supervoxel<PointT>::Ptr supervoxel = supervoxel_clusters.at (supervoxel_label);
+
+
+            //Now we need to iterate through the adjacent supervoxels and make a point cloud of them
+
+            PointCloudT adjacent_supervoxel_centers;
+
+            for (auto adjacent_itr = supervoxel_adjacency.equal_range (supervoxel_label).first; adjacent_itr!=supervoxel_adjacency.equal_range (supervoxel_label).second; ++adjacent_itr)
+
+            {
+
+            typename pcl::Supervoxel<PointT>::Ptr neighbor_supervoxel = supervoxel_clusters.at (adjacent_itr->second);
+
+            adjacent_supervoxel_centers.push_back (neighbor_supervoxel->centroid_);
+
+            }
+
+            //Now we make a name for this polygon
+
+            std::stringstream ss;
+
+            ss << "supervoxel_" << supervoxel_label;
+
+            //This function is shown below, but is beyond the scope of this tutorial - basically it just generates a "star" polygon mesh from the points given
+
+            addSupervoxelConnectionsToViewer(supervoxel->centroid_, adjacent_supervoxel_centers, ss.str (), viewer);
+
+            //Move iterator forward to next label
+
+            label_itr = supervoxel_adjacency.upper_bound (supervoxel_label);
+
+        }
+
+
     }
     template <typename PointT>
     auto Segment<PointT>::Plane_fitting_cluster_growth_v(typename PointCloudT::Ptr cloud_input)->void
@@ -943,5 +1046,56 @@ auto Segment<PointT>::poisson_reconstruction_GenerateMesh(typename PointCloudT::
             viewer->spinOnce(100);
             boost::this_thread::sleep(boost::posix_time::microseconds(100000));
         }      
+    }
+
+
+    template <typename PointT>
+    auto Segment<PointT>::addSupervoxelConnectionsToViewer (PointT &supervoxel_center,
+                                  typename PointCloudT &adjacent_supervoxel_centers,
+                                  std::string supervoxel_name,
+                                  pcl::visualization::PCLVisualizer::Ptr & viewer)->void
+    {
+
+    vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New ();
+
+    vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New ();
+
+    vtkSmartPointer<vtkPolyLine> polyLine = vtkSmartPointer<vtkPolyLine>::New ();
+
+
+    //Iterate through all adjacent points, and add a center point to adjacent point pair
+
+    for (auto adjacent_itr = adjacent_supervoxel_centers.begin (); adjacent_itr != adjacent_supervoxel_centers.end (); ++adjacent_itr)
+
+    {
+
+        points->InsertNextPoint (supervoxel_center.data);
+
+        points->InsertNextPoint (adjacent_itr->data);
+
+    }
+
+    // Create a polydata to store everything in
+
+    vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New ();
+
+    // Add the points to the dataset
+
+    polyData->SetPoints (points);
+
+    polyLine->GetPointIds  ()->SetNumberOfIds(points->GetNumberOfPoints ());
+
+    for(unsigned int i = 0; i < points->GetNumberOfPoints (); i++)
+
+        polyLine->GetPointIds ()->SetId (i,i);
+
+    cells->InsertNextCell (polyLine);
+
+    // Add the lines to the dataset
+
+    polyData->SetLines (cells);
+
+    viewer->addModelFromPolyData (polyData,supervoxel_name);
+
     }
 };
