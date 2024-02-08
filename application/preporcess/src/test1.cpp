@@ -69,11 +69,13 @@ int main(int argc, char** argv)
     }
     int pointcloud_type = 0;
     int display_type = 0; // 0 pointcloud  1 greedy_traingle mesh  2 poisson mesh
+    // pcl::console::parse (argc, argv, "-p", display_type);
     pcl::console::parse (argc, argv, "-t", pointcloud_type);
     pcl::console::parse (argc, argv, "-i", input_file);
     pcl::console::parse (argc, argv, "-o", output_file);
     pcl::console::parse (argc, argv, "-p", display_type);
     bool disable_transform = pcl::console::find_switch (argc, argv, "--NT");
+    bool enable_supervoxel = pcl::console::find_switch (argc, argv, "--SV");
     // std::unique_ptr<PointCloud_process1::Segment> seg(new PointCloud_process1::Segment);
     // PointCloud_process1::Segment<pcl::PointXYZRGB> seg;
     // PointCloud_process1::Segment<pcl::PointXYZI> seg;
@@ -91,26 +93,30 @@ int main(int argc, char** argv)
         seg.display_type=display_type;
         seg.disable_transform=disable_transform;
         seg.Plane_fitting_cluster_growth(seg.cloud);
-
-        seg.display();
-
         seg.save_pointcloud(output_file);
-
+        seg.display();
     }else if (pointcloud_type==1)
     {
         std::cout << "pcl::PointXYZRGB" << std::endl;
         PointCloud_process1::Segment<pcl::PointXYZRGB> seg;
         seg.load_pointcloud(input_file);
-        seg.pointcloud_finetune();
         // pcl::io::loadPointCloud()
         seg.init_display();
         seg.display_type=display_type;
         seg.disable_transform=disable_transform;
-        seg.Plane_fitting_cluster_growth(seg.cloud);
         
-        seg.display();
-
+        if(enable_supervoxel){
+            std::cout << "enable_supervoxel" << std::endl;
+            // seg.pointcloud_finetune();
+            seg.Cluster_super_voxel(seg.cloud);
+            
+        }else{
+            seg.pointcloud_finetune();
+            seg.Plane_fitting_cluster_growth(seg.cloud);
+        }
+            // seg.Cluster_super_voxel(seg.cloud);
         seg.save_pointcloud(output_file);
+        seg.display();
     }
     
     // seg.load_pointcloud(input_file);

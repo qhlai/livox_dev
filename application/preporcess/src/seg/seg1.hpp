@@ -117,11 +117,14 @@ public:
 
     virtual auto Cluster_super_voxel(typename PointCloudT::Ptr cloud_input)->void;
 
-    virtual auto addSupervoxelConnectionsToViewer (PointT &supervoxel_center,
-                                  PointCloudT &adjacent_supervoxel_centers,
+    // virtual auto addSupervoxelConnectionsToViewer (PointT &supervoxel_center,
+    //                               PointCloudT &adjacent_supervoxel_centers,
+    //                               std::string supervoxel_name,
+    //                               pcl::visualization::PCLVisualizer::Ptr & viewer)->void;
+    virtual auto addSupervoxelConnectionsToViewer (pcl::PointXYZRGBA &supervoxel_center,
+                                 pcl::PointCloud<pcl::PointXYZRGBA> &adjacent_supervoxel_centers,
                                   std::string supervoxel_name,
                                   pcl::visualization::PCLVisualizer::Ptr & viewer)->void;
-
     // // template <typename PointTy>
     // cv::Mat projection(typename pcl::PointCloud<PointTy>::Ptr cloud);
     // virtual auto projection(POINTCLOUD::Ptr cloud)->cv::Mat ;
@@ -142,6 +145,11 @@ public:
 
     virtual auto init_display()->void;
     virtual auto display()->void;
+
+
+    virtual auto PC_RGB2RGBA (pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud_input)->pcl::PointCloud<pcl::PointXYZRGBA>::Ptr;
+    
+    virtual auto PC_RGBA2RGB (pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud_input)->pcl::PointCloud<pcl::PointXYZRGB>::Ptr;
 
     boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
     
