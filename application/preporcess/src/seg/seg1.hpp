@@ -141,6 +141,9 @@ public:
 
     virtual auto poisson_reconstruction_GenerateMesh(typename PointCloudT::Ptr cloud_in,pcl::PointCloud<pcl::Normal>::Ptr normals)->pcl::PolygonMesh::Ptr;
 
+
+    virtual auto polygon_edge_GenerateMesh(typename PointCloudT::Ptr cloud_in,pcl::PointCloud<pcl::Normal>::Ptr normals)->pcl::PolygonMesh::Ptr;
+
     virtual auto get_cmd_parm(int argc, char** argv)->bool;
 
     virtual auto init_display()->void;

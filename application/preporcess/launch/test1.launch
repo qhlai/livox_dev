@@ -1,5 +1,5 @@
 <launch>
-<node pkg="pc_process" type="test1" name="test1" output="screen" args="-t 0 -i /home/lqh/ros/pc_ws/src/pointcloud_dev/application/preporcess/dataset/2.pcd -o /home/lqh/ros/pc_ws/src/pointcloud_dev/application/preporcess/dataset/4.pcd"/>
+<node pkg="pc_process" type="test1" name="test1" output="screen" args="-t 0 -i /home/lqh/ros/pc_ws/src/pointcloud_dev/application/preporcess/dataset/2.pcd -o /home/lqh/ros/pc_ws/src/pointcloud_dev/application/preporcess/dataset/4.pcd -p 3"/>
 
 <!-- <node pkg="pc_process" type="test1" name="test1" output="screen" args="-i /home/lqh/ros/pc_ws/src/pointcloud_dev/application/preporcess/dataset/indoor/cloud2.pcd -o /home/lqh/ros/pc_ws/src/pointcloud_dev/application/preporcess/dataset/4.pcd"/> -->
 </launch>
